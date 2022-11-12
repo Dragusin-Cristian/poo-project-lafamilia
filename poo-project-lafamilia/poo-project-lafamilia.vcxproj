@@ -128,12 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="Table.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Todos.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Argument.h" />
+    <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="KeyboardInput.h" />
     <ClInclude Include="Table.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,16 +1,10 @@
 #include <iostream>
 #include <string>
+#include "./Exceptions.h";
 using namespace std;
 
 
-class Exceptions : public exception {
-public:
-	string invalid_command() {
-		return "You entered an invalid command. Please type again:\n";
-	}
-};
-
-
+// also trim from beggining?
 void checkCommandValidity(string input) {
 	
 	if (!(
@@ -28,6 +22,7 @@ void checkCommandValidity(string input) {
 	}
 }
 
+// ["id INTEGER 1", "name TEXT Gigi"]
 string* splitArguments(string argsString, int* argsNo) {
 	argsString.pop_back();
 	*argsNo = 0;
@@ -62,13 +57,15 @@ string* splitArguments(string argsString, int* argsNo) {
 	return args;
 }
 
-void readArguments(string* args, int* argsNo) {
+void interpretArguments(string* args, int* argsNo) {
 	
 	// Interpret somehow the values from the arguments ... 
 
 	for (int i = 0; i < *argsNo; i++) {
 		cout << args[i] << endl;
 	}
+
+	// validateArguments
 }
 
 void getInput(string* input) {
@@ -115,7 +112,7 @@ string* readCommand(int* commandsLength, int* argsLength) {
 		else if (input[i] == '(') {
 			int* argsNo = new int(0);
 			string* args = splitArguments(input.substr(i + 1), argsNo);
-			readArguments(args, argsNo);
+			interpretArguments(args, argsNo);
 			break;
 		}
 		else {
@@ -129,10 +126,16 @@ string* readCommand(int* commandsLength, int* argsLength) {
 }
 
 
-// to implement:
+// to implement (IMPLMENT CLASSES):
 void interpretCommandsArray(string* commands, int commandsLength);
 
+class InputFromKeyboard {
+	//...
+};
 
+class Table {
+	//...
+};
 
 int main() {
 
@@ -146,6 +149,7 @@ int main() {
 	return 0;
 }
 
+// PHASE 2:
 // - string checking:
 // CREATE TABLE Cats(id INT(6), name VARCHAR(30), race VARCHAR(30)); 
 // INSERT INTO Cats(id, name, race) VALUES (1, "Cathy", "Vagaboanda");
