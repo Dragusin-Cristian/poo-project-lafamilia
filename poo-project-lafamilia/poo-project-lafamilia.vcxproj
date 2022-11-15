@@ -137,6 +137,7 @@
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="KeyboardInput.h" />
     <ClInclude Include="Table.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
