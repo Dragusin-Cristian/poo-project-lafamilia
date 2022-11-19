@@ -3,15 +3,18 @@
 #include "./Exceptions.h";
 using namespace std;
 
+enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_INDEX, INSERT_INTO, DELETE_FROM, SELECT, UPDATE };
+
 #pragma once
 // Cristi:
 // Handle a command from keyboard input. Ex: CREATE TABLE Stud(id INTEGER 1, name TEXT George)
 class KeyboardInput {
 public:
+	CommandType commandType;
 	int commandsLength;
 	int argsLength;
 	string* commands;
-	string* args;
+	string* argsStringArray;
 
 	KeyboardInput() {
 		commandsLength = 0;
@@ -32,7 +35,7 @@ public:
 
 		// Interpret somehow the values from the arguments ... 
 		for (int i = 0; i < argsLength; i++) {
-			cout << args[i] << endl;
+			cout << argsStringArray[i] << endl;
 		}
 		// validateArguments
 	}
@@ -57,7 +60,7 @@ private:
 			)) {
 			throw Exceptions();
 		}
-		//TODO: implement for more cases
+		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
 	}
 
 	// should return ["id INTEGER 1", "name TEXT Gigi"]
@@ -143,7 +146,7 @@ private:
 			}
 			else if (input[i] == '(') {
 				//int* argsNo = new int(0);
-				args = splitArguments(input.substr(i + 1), argsLength);
+				this->argsStringArray = splitArguments(input.substr(i + 1), argsLength);
 				//interpretArguments(args, argsNo);
 				break;
 			}
