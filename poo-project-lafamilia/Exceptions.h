@@ -5,8 +5,9 @@ enum ExceptionType {
 	INVALID_COMMAND, 
 	INVALID_ARGUMENT, 
 	INVALID_ARGUMENT_TYPE,
+	INVALID_DEFAULT_VALUE,
 	INVALID_PARANTHESIS,
-	INVALID_DEFAULT_VALUE
+	COMMAS_MISSMATCH
 };
 
 class Exceptions : public std::exception {
@@ -26,8 +27,10 @@ public:
 			return "The argument you entered has an invalid type. Please type again:\n";
 		case INVALID_DEFAULT_VALUE:
 			return "The argument you entered has an invalid default value. Please type again:\n";
+		case COMMAS_MISSMATCH:
+			return "You missmatched commas. Please type again:\n";
 		case INVALID_PARANTHESIS:
-			return "You missmatched paranthesis. Please type again:\n";
+			return "You missmatched paranthesis. Please type again:\n"; // remains to implement
 		default:
 			break;
 		}
