@@ -11,22 +11,18 @@ enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_I
 class KeyboardInput {
 public:
 	CommandType commandType;
-	int commandsLength;
 	int argsLength;
-	string* commands;
+	string command;
 	string* argsStringArray;
 
 	KeyboardInput() {
-		commandsLength = 0;
 		argsLength = 0;
-		commands = readCommand(&commandsLength, &argsLength);
+		command = readCommand(&argsLength);
 	}
 
 	// some way to interpret the commands:
 	void interpretCommands() {
-		for (int i = 0; i < commandsLength; i++) {
-			cout << commands[i] << endl;
-		}
+		cout << command << endl;
 	}
 
 	// some way to interpret the arguments found in the command
@@ -117,7 +113,7 @@ private:
 	}
 
 	// Basically, the first function that is called for manipulating the input.
-	string* readCommand(int* commandsLength, int* argsLength) {
+	string readCommand(int* argsLength) {
 		string input, word;
 		//* uncomment when developping:
 		//input = "CREATE TABLE Student(id NUMBER PRIMARY KEY, name TEXT Cristi, ceva CEVA)";
@@ -125,27 +121,15 @@ private:
 
 		//* and comment while developping:
 		getInput(&input);
+		string command;
 
-		// count spaces to set the commands array length:
-		for (int i = 0; i < input.length(); i++) {
-			if (input[i] == ' ') {
-				(*commandsLength)++;
-			}
-		}
-		(*commandsLength)++;
-		string* commands = new string[*commandsLength];
-
-
-		*commandsLength = 0;
 		// put the commands inside the array:
 		for (int i = 0; i < input.length(); i++) {
 			if (input[i] == ' ') {
-				commands[*commandsLength] = word;
-				(*commandsLength)++;
+				command += word+" ";
 				word = "";
 			}
 			else if (input[i] == '(') {
-				//int* argsNo = new int(0);
 				this->argsStringArray = splitArguments(input.substr(i + 1), argsLength);
 				//interpretArguments(args, argsNo);
 				break;
@@ -154,10 +138,11 @@ private:
 				word.push_back(input[i]);
 			}
 		}
-		commands[*commandsLength] = word;
-		(*commandsLength)++;
+		command += word + " ";
+		command.pop_back(); // last character is a space (check the if before)
 
-		return commands;
+
+		return command;
 	}
 
 	// to implement (IMPLMENT CLASSES):
