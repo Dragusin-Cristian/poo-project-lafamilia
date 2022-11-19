@@ -3,6 +3,7 @@
 #include "./Exceptions.h";
 using namespace std;
 
+
 enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_INDEX, INSERT_INTO, DELETE_FROM, SELECT, UPDATE };
 
 #pragma once
@@ -11,22 +12,14 @@ enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_I
 class KeyboardInput {
 public:
 	CommandType commandType;
-	int commandsLength;
 	int argsLength;
-	string* commands;
+	string command;
 	string* argsStringArray;
 
 	KeyboardInput() {
-		commandsLength = 0;
 		argsLength = 0;
-		commands = readCommand(&commandsLength, &argsLength);
-	}
-
-	// some way to interpret the commands:
-	void interpretCommands() {
-		for (int i = 0; i < commandsLength; i++) {
-			cout << commands[i] << endl;
-		}
+		command = readCommand(&argsLength);
+		interpretCommands();
 	}
 
 	// some way to interpret the arguments found in the command
@@ -38,6 +31,10 @@ public:
 			cout << argsStringArray[i] << endl;
 		}
 		// validateArguments
+	}
+
+	~KeyboardInput() {
+		cout << "Destructor called for KI "<< command << endl;
 	}
 
 private:
@@ -58,9 +55,40 @@ private:
 			input.find("SELECT ") == 0 ||
 			input.find("UPDATE ") == 0
 			)) {
-			throw Exceptions();
+			throw Exceptions(INVALID_COMMAND);
 		}
 		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
+	}
+
+	// some way to interpret the commands:
+	void interpretCommands() {
+		if (command.find("CREATE TABLE ") == 0) {
+			commandType = CREATE_TABLE;
+		}
+		else if (command.find("DROP TABLE ") == 0) {
+			commandType = DROP_TABLE;
+		}
+		else if (command.find("DISPLAY TABLE ") == 0) {
+			commandType = DISPLAY_TABLE;
+		}
+		else if (command.find("CREATE INDEX ") == 0) {
+			commandType = CREATE_INDEX;
+		}
+		else if (command.find("DROP INDEX ") == 0) {
+			commandType = DROP_INDEX;
+		}
+		else if (command.find("INSERT INTO ") == 0) {
+			commandType = INSERT_INTO;
+		}
+		else if (command.find("DELETE FROM ") == 0) {
+			commandType = DELETE_FROM;
+		}
+		else if (command.find("SELECT ") == 0) {
+			commandType = SELECT;
+		}
+		else if (command.find("UPDATE ") == 0) {
+			commandType = UPDATE;
+		}
 	}
 
 	// should return ["id INTEGER 1", "name TEXT Gigi"]
@@ -102,50 +130,42 @@ private:
 
 
 	// just get the input and check for validity:
-	void getInput(string* input) {
-		getline(cin, *input);
+	//void getInput(string* input) {
+	//	getline(cin, *input);
 
-		try
-		{
-			checkCommandValidity(*input);
-		}
-		catch (Exceptions e)
-		{
-			cout << e.invalid_command();
-			getInput(input);
-		}
-	}
+	//	try
+	//	{
+	//		checkCommandValidity(*input);
+	//	}
+	//	catch (Exceptions e)
+	//	{
+	//		cout << e.invalid_command();
+	//		getInput(input);
+	//	}
+	//}
 
 	// Basically, the first function that is called for manipulating the input.
-	string* readCommand(int* commandsLength, int* argsLength) {
+	string readCommand(int* argsLength) {
 		string input, word;
 		//* uncomment when developping:
 		//input = "CREATE TABLE Student(id NUMBER PRIMARY KEY, name TEXT Cristi, ceva CEVA)";
 		//cout << input << endl << endl;
 
 		//* and comment while developping:
-		getInput(&input);
+		
+		//getInput(&input);
+		getline(cin, input);
+		checkCommandValidity(input);
 
-		// count spaces to set the commands array length:
-		for (int i = 0; i < input.length(); i++) {
-			if (input[i] == ' ') {
-				(*commandsLength)++;
-			}
-		}
-		(*commandsLength)++;
-		string* commands = new string[*commandsLength];
+		string command;
 
-
-		*commandsLength = 0;
 		// put the commands inside the array:
 		for (int i = 0; i < input.length(); i++) {
 			if (input[i] == ' ') {
-				commands[*commandsLength] = word;
-				(*commandsLength)++;
+				command += word+" ";
 				word = "";
 			}
 			else if (input[i] == '(') {
-				//int* argsNo = new int(0);
 				this->argsStringArray = splitArguments(input.substr(i + 1), argsLength);
 				//interpretArguments(args, argsNo);
 				break;
@@ -154,12 +174,10 @@ private:
 				word.push_back(input[i]);
 			}
 		}
-		commands[*commandsLength] = word;
-		(*commandsLength)++;
+		command += word + " ";
+		command.pop_back(); // last character is a space (check the if before)
 
-		return commands;
+
+		return command;
 	}
-
-	// to implement (IMPLMENT CLASSES):
-	void interpretCommandsArray(string* commands, int commandsLength);
 };

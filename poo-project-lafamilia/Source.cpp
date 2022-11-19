@@ -1,24 +1,38 @@
 #include <iostream>
 #include "KeyboardInput.h";
 #include "ArgumentCreateTable.h";
+#include "Exceptions.h";
 using namespace std;
 
+void deleteKI(KeyboardInput* ki) {
+	delete ki;
+	ki = nullptr;
+}
+
 int main() {
+	// TO-DO LATER: Handle memory leaks:
+	try
+	{
+		KeyboardInput ki;
 
-	KeyboardInput ki;
+		ArgumentCreateTable** argsArrayCreateTable = new ArgumentCreateTable * [ki.argsLength];
 
-	ki.interpretCommands();
-	ki.interpretArguments();
+		for (int i = 0; i < ki.argsLength; i++) {
+			argsArrayCreateTable[i] = new ArgumentCreateTable(ki.argsStringArray[i]);
+		}
 
+		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
+		cout << ki.command << endl;
+		ki.interpretArguments();
 
-	ArgumentCreateTable** argsArrayCreateTable = new ArgumentCreateTable *[ki.argsLength];
-	
-	for (int i = 0; i < ki.argsLength; i++) {
-		argsArrayCreateTable[i] = new ArgumentCreateTable(ki.argsStringArray[i]);
+		return 0;
+	}
+	catch (Exceptions e)
+	{
+		cout << e.handleError();
+		main();
 	}
 
-
-	return 0;
 }
 
 // PHASE 2:

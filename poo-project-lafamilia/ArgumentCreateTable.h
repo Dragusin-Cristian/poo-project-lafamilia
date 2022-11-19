@@ -2,7 +2,7 @@
 
 #include "Util.h"
 #include <string>
-
+#include "Exceptions.h";
 
 //NOTE: This class is made to work for the arguments of CREATE TABLE. For other commands, we might need
 //to modify it, or create another class altogether
@@ -70,8 +70,8 @@ private:
 		arguments = this->removeExtraSpaces(arguments);
 		short int nrOfWords = std::count(arguments.cbegin(), arguments.cend(), ' ') + 1; //counts the number of spaces in arguments
 		if (nrOfWords != 3)
-			throw "Invalid argument!"; //We will create an exception for this later in Exceptions.h
-
+			throw Exceptions(INVALID_ARGUMENT);  //We will create an exception for this later in Exceptions.h
+		
 		int index_firstSpace = arguments.find(" ");
 		int index_secondSpace = Util::nthOccurrence(arguments, " ", 2);
 
@@ -81,19 +81,19 @@ private:
 
 		//Check validity of type
 		if (Util::in_array(type, this->ALL_DATA_TYPES, this->NUMBER_OF_TYPES) == false) {
-			throw "Invalid argument type!"; //We will create an exception for this later in Exceptions.h
+			throw Exceptions(INVALID_ARGUMENT_TYPE); 
 		}
 
 		//Check validity of default value
 		if (type == "INTEGER") {
 			for (size_t i = 0; i < defaultValue.size(); ++i)
 				if (!std::isdigit(defaultValue[i]))
-					throw "Invalid default value!"; //We will create an exception for this later in Exceptions.h
+					throw Exceptions(INVALID_DEFAULT_VALUE); 
 		}
 		else if (type == "REAL") {
 			for (size_t i = 0; i < defaultValue.size(); ++i)
 				if (!std::isdigit(defaultValue[i]) && !defaultValue[i] == '.')
-					throw "Invalid default value!"; //We will create an exception for this later in Exceptions.h
+					throw Exceptions(INVALID_DEFAULT_VALUE);
 		}
 
 		//We don't need validation for BLOB, TEXT and NUMERIC, since any of those 3 would be valid if it had gotten to this point
