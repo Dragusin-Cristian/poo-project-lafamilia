@@ -3,6 +3,7 @@
 #include "./Exceptions.h";
 using namespace std;
 
+
 enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_INDEX, INSERT_INTO, DELETE_FROM, SELECT, UPDATE };
 
 #pragma once
@@ -18,11 +19,7 @@ public:
 	KeyboardInput() {
 		argsLength = 0;
 		command = readCommand(&argsLength);
-	}
-
-	// some way to interpret the commands:
-	void interpretCommands() {
-		cout << command << endl;
+		interpretCommands();
 	}
 
 	// some way to interpret the arguments found in the command
@@ -34,6 +31,10 @@ public:
 			cout << argsStringArray[i] << endl;
 		}
 		// validateArguments
+	}
+
+	~KeyboardInput() {
+		cout << "Destructor called for KI "<< command << endl;
 	}
 
 private:
@@ -54,9 +55,40 @@ private:
 			input.find("SELECT ") == 0 ||
 			input.find("UPDATE ") == 0
 			)) {
-			throw Exceptions();
+			throw Exceptions(INVALID_COMMAND);
 		}
 		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
+	}
+
+	// some way to interpret the commands:
+	void interpretCommands() {
+		if (command.find("CREATE TABLE ") == 0) {
+			commandType = CREATE_TABLE;
+		}
+		else if (command.find("DROP TABLE ") == 0) {
+			commandType = DROP_TABLE;
+		}
+		else if (command.find("DISPLAY TABLE ") == 0) {
+			commandType = DISPLAY_TABLE;
+		}
+		else if (command.find("CREATE INDEX ") == 0) {
+			commandType = CREATE_INDEX;
+		}
+		else if (command.find("DROP INDEX ") == 0) {
+			commandType = DROP_INDEX;
+		}
+		else if (command.find("INSERT INTO ") == 0) {
+			commandType = INSERT_INTO;
+		}
+		else if (command.find("DELETE FROM ") == 0) {
+			commandType = DELETE_FROM;
+		}
+		else if (command.find("SELECT ") == 0) {
+			commandType = SELECT;
+		}
+		else if (command.find("UPDATE ") == 0) {
+			commandType = UPDATE;
+		}
 	}
 
 	// should return ["id INTEGER 1", "name TEXT Gigi"]
@@ -98,19 +130,19 @@ private:
 
 
 	// just get the input and check for validity:
-	void getInput(string* input) {
-		getline(cin, *input);
+	//void getInput(string* input) {
+	//	getline(cin, *input);
 
-		try
-		{
-			checkCommandValidity(*input);
-		}
-		catch (Exceptions e)
-		{
-			cout << e.invalid_command();
-			getInput(input);
-		}
-	}
+	//	try
+	//	{
+	//		checkCommandValidity(*input);
+	//	}
+	//	catch (Exceptions e)
+	//	{
+	//		cout << e.invalid_command();
+	//		getInput(input);
+	//	}
+	//}
 
 	// Basically, the first function that is called for manipulating the input.
 	string readCommand(int* argsLength) {
@@ -120,7 +152,11 @@ private:
 		//cout << input << endl << endl;
 
 		//* and comment while developping:
-		getInput(&input);
+		
+		//getInput(&input);
+		getline(cin, input);
+		checkCommandValidity(input);
+
 		string command;
 
 		// put the commands inside the array:
@@ -144,7 +180,4 @@ private:
 
 		return command;
 	}
-
-	// to implement (IMPLMENT CLASSES):
-	void interpretCommandsArray(string* commands, int commandsLength);
 };

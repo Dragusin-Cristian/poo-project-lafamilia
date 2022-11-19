@@ -130,9 +130,6 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Todos.md" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="ArgumentCreateTable.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="KeyboardInput.h" />
