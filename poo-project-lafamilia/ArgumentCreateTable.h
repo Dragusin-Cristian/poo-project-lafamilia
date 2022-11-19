@@ -6,11 +6,11 @@
 
 //NOTE: This class is made to work for the arguments of CREATE TABLE. For other commands, we might need
 //to modify it, or create another class altogether
-class Argument {
+class ArgumentCreateTable {
 public:
 	//INPUT: an argument of the form "columnName TYPE defaultValue", ex: "id INTEGER 1"
 	//This function sets the values for this class' private variables: columnName, type and defaultValue
-	Argument(std::string arguments)
+	ArgumentCreateTable(std::string arguments)
 	{
 		arguments = this->removeExtraSpaces(arguments);
 		this->validateArgument(arguments);
@@ -101,4 +101,4 @@ private:
 };
 
 //STATIC CONST VARIABLE DEFINITIONS:
-const char* const Argument::ALL_DATA_TYPES[] = { "INTEGER", "TEXT", "BLOB", "REAL", "NUMERIC"};
+const char* const ArgumentCreateTable::ALL_DATA_TYPES[] = { "INTEGER", "TEXT", "BLOB", "REAL", "NUMERIC"};

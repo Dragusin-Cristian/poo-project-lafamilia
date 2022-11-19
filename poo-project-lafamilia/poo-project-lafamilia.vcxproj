@@ -133,7 +133,7 @@
     <None Include="Todos.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Argument.h" />
+    <ClInclude Include="ArgumentCreateTable.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="KeyboardInput.h" />
     <ClInclude Include="Table.h" />

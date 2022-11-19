@@ -26,7 +26,7 @@
     <ClInclude Include="Table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Argument.h">
+    <ClInclude Include="ArgumentCreateTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Exceptions.h">
