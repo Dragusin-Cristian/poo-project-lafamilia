@@ -12,6 +12,17 @@ enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_I
 // Handle a command from keyboard input. Ex: CREATE TABLE Stud(id INTEGER 1, name TEXT George)
 class KeyboardInput {
 public:
+	//for each of these static const variables we add 1 in order to take into account the space after the command too (ex: "CREATE TABLE " and not "CREATE TABLE")
+	static const int LENGTH_CREATE_TABLE_COMMAND;
+	static const int LENGTH_DROP_TABLE_COMMAND;
+	static const int LENGTH_DISPLAY_TABLE_COMMAND;
+	static const int LENGTH_CREATE_INDEX_COMMAND;
+	static const int LENGTH_DROP_INDEX_COMMAND;
+	static const int LENGTH_INSERT_INTO_COMMAND;
+	static const int LENGTH_DELETE_FROM_COMMAND;
+	static const int LENGTH_SELECT_COMMAND;
+	static const int LENGTH_UPDATE_COMMAND;
+
 	CommandType commandType;
 	string tableName;
 	string* argsStringArray;
@@ -223,3 +234,14 @@ private:
 		return command;
 	}
 };
+
+//for each of these static const variables we add 1 in order to take into account the space after the command too (ex: "CREATE TABLE " and not "CREATE TABLE")
+const int KeyboardInput::LENGTH_CREATE_TABLE_COMMAND = 13;
+const int KeyboardInput::LENGTH_DROP_TABLE_COMMAND = 11;
+const int KeyboardInput::LENGTH_DISPLAY_TABLE_COMMAND = 14;
+const int KeyboardInput::LENGTH_CREATE_INDEX_COMMAND = 13;
+const int KeyboardInput::LENGTH_DROP_INDEX_COMMAND = 11;
+const int KeyboardInput::LENGTH_INSERT_INTO_COMMAND = 12;
+const int KeyboardInput::LENGTH_DELETE_FROM_COMMAND = 12;
+const int KeyboardInput::LENGTH_SELECT_COMMAND = 7;
+const int KeyboardInput::LENGTH_UPDATE_COMMAND = 7;
