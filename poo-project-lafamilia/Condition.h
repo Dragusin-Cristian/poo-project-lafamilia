@@ -53,12 +53,23 @@ private:
 
 	// ["name="Cathy"", "gender=0"]
 	void splitFieldsAndValues() {
+
+
 		fields = new string[conditionsLength];
 		values = new string[conditionsLength];
 
 		for (int i = 0; i < conditionsLength; i++) {
+			if (conditions[i].find("=") == string::npos)
+				throw Exceptions(INVALID_CONDITION);
+
 			string field = conditions[i].substr(0, conditions[i].find("="));
 			string value = conditions[i].substr(conditions[i].find("=") + 1);
+
+			if (field == "" || value == "" || value == "\"\"")
+				throw Exceptions(INVALID_CONDITION);
+
+			if (field.find(" ") != string::npos)
+				throw Exceptions(INVALID_CONDITION);
 
 			Util::removeWhiteSpacesBefore(&field);
 			Util::removeAllWhiteSpacesAfter(&field);
