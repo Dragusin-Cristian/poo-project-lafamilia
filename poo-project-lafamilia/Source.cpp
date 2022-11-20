@@ -40,7 +40,7 @@ int main() {
 		case UPDATE:
 			//table.updateTable(...)
 		case INSERT_INTO:
-			ki.publicValidateInsertIntoForDebuggingDeleteLater();
+			//table.insertInto(...)
 		case DELETE_FROM:
 			//table.deleteFrom(...)
 		case DROP_TABLE:

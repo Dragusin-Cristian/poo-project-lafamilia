@@ -68,6 +68,9 @@ private:
 			if (field == "" || value == "" || value == "\"\"")
 				throw Exceptions(INVALID_CONDITION);
 
+			if (field.find(" ") != string::npos)
+				throw Exceptions(INVALID_CONDITION);
+
 			Util::removeWhiteSpacesBefore(&field);
 			Util::removeAllWhiteSpacesAfter(&field);
 			Util::removeWhiteSpacesBefore(&value);

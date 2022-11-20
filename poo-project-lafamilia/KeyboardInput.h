@@ -23,6 +23,7 @@ public:
 	static const int LENGTH_DELETE_FROM_COMMAND;
 	static const int LENGTH_SELECT_COMMAND;
 	static const int LENGTH_UPDATE_COMMAND;
+	static const int LENGTH_WHERE_CONDITION;
 
 	CommandType commandType;
 	string tableName;
@@ -43,10 +44,6 @@ public:
 	//	cout << "Destructor called for KI "<< allWordsBeforeFirstParanthesis << endl;
 	//}
 
-	void publicValidateInsertIntoForDebuggingDeleteLater()
-	{
-		this->validateInsertInto();
-	}
 
 private:
 	string allWordsBeforeFirstParanthesis; // CREATE TABLE Stud // for example
@@ -216,6 +213,8 @@ private:
 		// ...
 	}
 
+
+
 	// Stefan:
 	string* splitInsertIntoArguments(string input, int& argsNo)
 	{
@@ -302,15 +301,36 @@ private:
 		//VALIDATION CHECK 4: CRASH THE PROGRAM IF THE NUMBER OF ARGUMENTS DON'T MATCH IN EACH PARANTHESIS
 		if (noOfFieldArguments != noOfValueArguments)
 			throw Exceptions(INVALID_ARGUMENT);
-
-		
-		/*for (int i = 0; i < noOfValueArguments; i++)
-			cout << argsValues[i] << " ";*/
-		
-		
 	}
+
 	void validateDeleteFrom() {
-		// ...
+		int indexFirstSpaceAfterTableName = KeyboardInput::LENGTH_DELETE_FROM_COMMAND;
+		while (this->rawInput[indexFirstSpaceAfterTableName] != ' ')
+			indexFirstSpaceAfterTableName++;
+
+		this->tableName = this->rawInput.substr(
+			KeyboardInput::LENGTH_DELETE_FROM_COMMAND, 
+			indexFirstSpaceAfterTableName - KeyboardInput::LENGTH_DELETE_FROM_COMMAND);
+
+		//VALIDATION CHECK 1: CRASH THE PROGRAM IF TABLE NAME HAS SPACES
+		if (this->tableName.find(' ') != string::npos)
+			throw Exceptions(INVALID_COMMAND);
+
+		int indexAfterTableName = KeyboardInput::LENGTH_DELETE_FROM_COMMAND + this->tableName.size();
+
+		//VALIDATION CHECK 2: CRASH THE PROGRAM IF "WHERE" IS WRITTEN INCORRECTLY
+		if (indexAfterTableName != this->rawInput.size() &&
+			this->rawInput.substr(indexAfterTableName, KeyboardInput::LENGTH_WHERE_CONDITION + 1) != " WHERE ") {
+
+			throw Exceptions(INVALID_COMMAND);
+		}
+
+		int indexAfterWhere = indexAfterTableName + KeyboardInput::LENGTH_WHERE_CONDITION;
+		//cout << "index after where is " << indexAfterWhere << ".";
+
+		Condition condition(this->rawInput.substr(indexAfterWhere, this->rawInput.size()-1));
+		this->hasCondition = true;
+
 	}
 
 	// Adnrei:
@@ -405,3 +425,4 @@ const int KeyboardInput::LENGTH_INSERT_INTO_COMMAND = 12;
 const int KeyboardInput::LENGTH_DELETE_FROM_COMMAND = 12;
 const int KeyboardInput::LENGTH_SELECT_COMMAND = 7;
 const int KeyboardInput::LENGTH_UPDATE_COMMAND = 7;
+const int KeyboardInput::LENGTH_WHERE_CONDITION = 6;
