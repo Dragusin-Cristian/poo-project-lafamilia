@@ -39,8 +39,14 @@ public:
 	//	cout << "Destructor called for KI "<< allWordsBeforeFirstParanthesis << endl;
 	//}
 
+	void publicValidateInsertIntoForDebuggingDeleteLater()
+	{
+		this->validateInsertInto();
+	}
+
 private:
 	string allWordsBeforeFirstParanthesis; // CREATE TABLE Stud // for example
+	string rawInput;
 
 	static void checkCommandValidity(string input) {
 		// remove all white spaces before the actual command starts (maybe the user is drunk :) ):
@@ -133,7 +139,7 @@ private:
 
 	//Cristi:
 	void validateCreateTable() {
-		tableName = allWordsBeforeFirstParanthesis.erase(0, 13); // LENGTH OF "CREATE TABLE "
+		this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_CREATE_TABLE_COMMAND);
 	}
 	void validateSelectFrom() {
 		// ...
@@ -150,7 +156,8 @@ private:
 
 	// Stefan:
 	void validateInsertInto() {
-		//tableName = ...
+		this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_INSERT_INTO_COMMAND);
+		
 	}
 	void validateDeleteFrom() {
 		// ...
@@ -209,6 +216,8 @@ private:
 
 		getline(cin, input);
 		checkCommandValidity(input);
+
+		this->rawInput = input;
 
 		string command;
 
