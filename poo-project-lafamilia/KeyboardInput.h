@@ -63,10 +63,10 @@ private:
 			input.find("DISPLAY TABLE ") == 0 ||
 			input.find("CREATE INDEX ") == 0 ||
 			input.find("DROP INDEX ") == 0 ||
-			input.find("INSERT INTO ") == 0 ||
+			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos ) ||
 			input.find("DELETE FROM ") == 0 ||
 			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && input.find("(") == string::npos) ||
-			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos)
+			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos && input.find("(") == string::npos)
 			)) {
 			throw Exceptions(INVALID_COMMAND);
 		}
@@ -77,31 +77,31 @@ private:
 	}
 
 	void setCommandType() {
-		if (allWordsBeforeFirstParanthesis.find("CREATE TABLE ") == 0) {
+		if (rawInput.find("CREATE TABLE ") == 0) {
 			commandType = CREATE_TABLE;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("DROP TABLE ") == 0) {
+		else if (rawInput.find("DROP TABLE ") == 0) {
 			commandType = DROP_TABLE;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("DISPLAY TABLE ") == 0) {
+		else if (rawInput.find("DISPLAY TABLE ") == 0) {
 			commandType = DISPLAY_TABLE;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("CREATE INDEX ") == 0) {
+		else if (rawInput.find("CREATE INDEX ") == 0) {
 			commandType = CREATE_INDEX;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("DROP INDEX ") == 0) {
+		else if (rawInput.find("DROP INDEX ") == 0) {
 			commandType = DROP_INDEX;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("INSERT INTO ") == 0) {
+		else if (rawInput.find("INSERT INTO ") == 0) {
 			commandType = INSERT_INTO;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("DELETE FROM ") == 0) {
+		else if (rawInput.find("DELETE FROM ") == 0) {
 			commandType = DELETE_FROM;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("SELECT ") == 0) {
+		else if (rawInput.find("SELECT ") == 0) {
 			commandType = SELECT;
 		}
-		else if (allWordsBeforeFirstParanthesis.find("UPDATE ") == 0) {
+		else if (rawInput.find("UPDATE ") == 0) {
 			commandType = UPDATE;
 		}
 	}
@@ -149,9 +149,8 @@ private:
 		this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_CREATE_TABLE_COMMAND);
 	}
 	void validateSelectFrom() {
-		cout << allWordsBeforeFirstParanthesis<<endl;
 		// TAKE THE ARGUMENTS:
-		string argsString = allWordsBeforeFirstParanthesis.substr(7, allWordsBeforeFirstParanthesis.find(" FROM ")-7);
+		string argsString = rawInput.substr(7, rawInput.find(" FROM ")-7);
 		Util::removeWhiteSpacesBefore(&argsString);
 		Util::removeAllWhiteSpacesAfter(&argsString);
 		if (argsString == "ALL") {
@@ -194,20 +193,25 @@ private:
 		}
 
 		// CHECK FOR WHERE CONDITION:
-		hasCondition = allWordsBeforeFirstParanthesis.find("WHERE") != string::npos;
+		hasCondition = rawInput.find("WHERE") != string::npos;
 		// TAKE THE TABLE NAME:
 		if (hasCondition) {
-			tableName = allWordsBeforeFirstParanthesis.substr(allWordsBeforeFirstParanthesis.find("FROM ") + 5, allWordsBeforeFirstParanthesis.find(" WHERE")-(allWordsBeforeFirstParanthesis.find("FROM ") + 5));
+			tableName = rawInput.substr(rawInput.find("FROM ") + 5, rawInput.find(" WHERE")-(rawInput.find("FROM ") + 5));
 			
-			string afterWhere = allWordsBeforeFirstParanthesis.substr(allWordsBeforeFirstParanthesis.find("WHERE ") + 6);
+			string afterWhere = rawInput.substr(rawInput.find("WHERE ") + 6);
 			conditions = new Condition(afterWhere);
 		}
 		else {
-			tableName = allWordsBeforeFirstParanthesis.substr(allWordsBeforeFirstParanthesis.find("FROM ") + 5);
+			tableName = rawInput.substr(rawInput.find("FROM ") + 5);
 		}
 	}
 	void validateUpdate() {
-		// ...
+		// GET THE TABLE NAME:
+		tableName = rawInput.substr(LENGTH_UPDATE_COMMAND, rawInput.find(" SET")-LENGTH_UPDATE_COMMAND);
+		Util::removeWhiteSpacesBefore(&tableName);
+		Util::removeAllWhiteSpacesAfter(&tableName);
+
+		cout << tableName<<endl;
 	}
 	void validateCreateIndex() {
 		// ...

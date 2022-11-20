@@ -36,17 +36,21 @@ int main() {
 		case SELECT:
 			table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName, ki.conditions->fields, ki.conditions->values, ki.conditions->conditionsLength);
 			break;
-			//table.selectFromTable(...)
 		case UPDATE:
 			//table.updateTable(...)
+			break;
 		case INSERT_INTO:
 			ki.publicValidateInsertIntoForDebuggingDeleteLater();
+			break;
 		case DELETE_FROM:
 			//table.deleteFrom(...)
+			break;
 		case DROP_TABLE:
 			//table.dropTable(...)
+			break;
 		case DISPLAY_TABLE:
 			//table.displayTable(...)
+			break;
 		default:
 			break;
 		}
