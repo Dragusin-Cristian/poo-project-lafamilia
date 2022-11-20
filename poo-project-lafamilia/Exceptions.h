@@ -7,7 +7,7 @@ enum ExceptionType {
 	INVALID_ARGUMENT_TYPE,
 	INVALID_DEFAULT_VALUE,
 	INVALID_PARANTHESIS,
-	COMMAS_MISSMATCH
+	COMMAS_MISSMATCH,
 };
 
 class Exceptions : public std::exception {
