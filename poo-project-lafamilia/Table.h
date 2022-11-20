@@ -24,7 +24,7 @@ public:
 	}
 
 	// Cristi:
-	void selectFromTable(string* selectFields, int selectFieldsLength, string tableName, string* conditionFileds, string* conditionValues, int conditionsLength) {
+	void selectFromTable(string* selectFields, int selectFieldsLength, string tableName, string* conditionFileds=nullptr, string* conditionValues=nullptr, int conditionsLength=NULL) {
 		assert(selectFields != nullptr && selectFieldsLength > 0, "Null fields reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
@@ -45,10 +45,8 @@ public:
 	}
 
 	// Cristi:
-	void updateTable(string tableName, string* fieldsToSet, int fieldsLength, string* values, int valuesLength) {
-		assert(fieldsToSet != nullptr && fieldsLength > 0, "Null fields reference passed.");
-		assert(values != nullptr && valuesLength > 0, "Null fields reference passed.");
-		assert(fieldsLength != valuesLength, "Numbers of fields and values to set are different.");
+	void updateTable(string tableName, string* fieldsToSet=nullptr, string* values=nullptr, int fieldsLength=NULL) {
+		assert(fieldsToSet != nullptr && values != nullptr && fieldsLength > 0, "Null fields reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
 		// do something in phase 2:
@@ -56,11 +54,18 @@ public:
 		for (int i = 0; i < fieldsLength; i++) {
 			cout << fieldsToSet[i] << ", ";
 		}
-		cout << "updated to values ";
-		for (int i = 0; i < valuesLength; i++) {
+		cout << "from table "<< tableName <<" updated to values ";
+		for (int i = 0; i < fieldsLength; i++) {
 			cout << values[i] << ", ";
 		}
 		cout << endl;
+	}
+
+	// Cristi:
+	void createIndex(string tableName, string indexName, string columnName) {
+		assert(tableName != "" && indexName != "" && columnName != "", "Empty table name or index name or column name.");
+
+		cout << "Index " << indexName << " created on table " << tableName << " on " << columnName << " column." << endl;
 	}
 
 	// Stefan:
@@ -69,6 +74,7 @@ public:
 
 	// Andrei:
 	void dropTable();
+	void dropIndex();
 	void displayTable();
 
 private:

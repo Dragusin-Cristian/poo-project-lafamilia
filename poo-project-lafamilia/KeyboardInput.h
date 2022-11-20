@@ -2,7 +2,7 @@
 #include <string>
 #include "./Exceptions.h";
 #include "Util.h";
-#include "Condition.h";
+#include "StringStructureToArray.h";
 using namespace std;
 
 
@@ -24,13 +24,18 @@ public:
 	static const int LENGTH_SELECT_COMMAND;
 	static const int LENGTH_UPDATE_COMMAND;
 	static const int LENGTH_WHERE_CONDITION;
+	static const int LENGTH_SET_COMMAND;
+	static const int LENGTH_ON_COMMAND;
 
 	CommandType commandType;
 	string tableName;
 	string* argsStringArray;
 	int argsLength;
 	bool hasCondition;
-	Condition* conditions;
+	StringStructureToArray* conditions;
+	StringStructureToArray* updateArgs;
+	string indexName;
+	string columnNameForCreateIndex;
 
 	KeyboardInput() {
 		hasCondition = false;
@@ -58,7 +63,7 @@ private:
 			input.find("CREATE TABLE ") == 0 ||
 			input.find("DROP TABLE ") == 0 ||
 			input.find("DISPLAY TABLE ") == 0 ||
-			input.find("CREATE INDEX ") == 0 ||
+			(input.find("CREATE INDEX ") == 0 && input.find(" ON ") != string::npos) ||
 			input.find("DROP INDEX ") == 0 ||
 			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos ) ||
 			input.find("DELETE FROM ") == 0 ||
@@ -71,6 +76,12 @@ private:
 			throw Exceptions(INVALID_COMMAS);
 		}
 		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
+	}
+
+	void checkTableNameValidity() {
+		if (tableName == "" || tableName.find(" ") !=string::npos ) {
+			throw Exceptions(INVALID_TABLE_NAME);
+		}
 	}
 
 	void setCommandType() {
@@ -139,6 +150,8 @@ private:
 
 		Util::removeWhiteSpacesBefore(&tableName);
 		Util::removeAllWhiteSpacesAfter(&tableName);
+
+		checkTableNameValidity();
 	}
 
 	//Cristi:
@@ -196,27 +209,43 @@ private:
 			tableName = rawInput.substr(rawInput.find("FROM ") + 5, rawInput.find(" WHERE")-(rawInput.find("FROM ") + 5));
 			
 			string afterWhere = rawInput.substr(rawInput.find("WHERE ") + 6);
-			conditions = new Condition(afterWhere);
+			conditions = new StringStructureToArray(afterWhere);
 		}
 		else {
 			tableName = rawInput.substr(rawInput.find("FROM ") + 5);
 		}
 	}
+
 	void validateUpdate() {
 		// GET THE TABLE NAME:
 		tableName = rawInput.substr(LENGTH_UPDATE_COMMAND, rawInput.find(" SET")-LENGTH_UPDATE_COMMAND);
-		Util::removeWhiteSpacesBefore(&tableName);
-		Util::removeAllWhiteSpacesAfter(&tableName);
 
-		cout << tableName<<endl;
+		string afterSet = rawInput.substr(rawInput.find(" SET ") + LENGTH_SET_COMMAND);
+		updateArgs = new StringStructureToArray(afterSet);
 	}
+
 	void validateCreateIndex() {
-		// ...
-	}
-	void validateDropIndex() {
-		// ...
-	}
+		indexName = allWordsBeforeFirstParanthesis.substr(LENGTH_CREATE_INDEX_COMMAND, allWordsBeforeFirstParanthesis.find(" ON ") - LENGTH_CREATE_INDEX_COMMAND);
+		
+		Util::removeWhiteSpacesBefore(&indexName);
+		Util::removeAllWhiteSpacesAfter(&indexName);
+		if (indexName == "", indexName.find(" ") != string::npos) {
+			throw Exceptions(INVALID_INDEX_NAME);
+		}
+		
+		tableName = allWordsBeforeFirstParanthesis.substr(rawInput.find(" ON ") + LENGTH_ON_COMMAND);
 
+		columnNameForCreateIndex = rawInput.substr(allWordsBeforeFirstParanthesis.size()+1);
+		
+		columnNameForCreateIndex.pop_back();
+		Util::removeWhiteSpacesBefore(&columnNameForCreateIndex);
+		Util::removeAllWhiteSpacesAfter(&columnNameForCreateIndex);
+
+		if (columnNameForCreateIndex == "" || columnNameForCreateIndex.find(" ") != string::npos) {
+			throw Exceptions(INVALID_COLUMN_NAME);
+		}
+
+	}
 
 
 	// Stefan:
@@ -332,7 +361,7 @@ private:
 		int indexAfterWhere = indexAfterTableName + KeyboardInput::LENGTH_WHERE_CONDITION;
 		//cout << "index after where is " << indexAfterWhere << ".";
 
-		Condition condition(this->rawInput.substr(indexAfterWhere, this->rawInput.size()-1));
+		StringStructureToArray condition(this->rawInput.substr(indexAfterWhere, this->rawInput.size()-1));
 		this->hasCondition = true;
 
 	}
@@ -344,7 +373,9 @@ private:
 	void validateDisplayTable() {
 		// ...
 	}
-
+	void validateDropIndex() {
+		// ...
+	}
 
 	// should return ["id INTEGER 1", "name TEXT Gigi"]
 	string* splitCreateTableArguments(string argsString, int* argsNo) {
@@ -430,3 +461,5 @@ const int KeyboardInput::LENGTH_DELETE_FROM_COMMAND = 12;
 const int KeyboardInput::LENGTH_SELECT_COMMAND = 7;
 const int KeyboardInput::LENGTH_UPDATE_COMMAND = 7;
 const int KeyboardInput::LENGTH_WHERE_CONDITION = 6;
+const int KeyboardInput::LENGTH_SET_COMMAND = 5; // Also count the space before SET
+const int KeyboardInput::LENGTH_ON_COMMAND = 4; // Also count the space before SET

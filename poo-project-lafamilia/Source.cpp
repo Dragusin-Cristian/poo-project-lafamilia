@@ -37,7 +37,7 @@ int main() {
 			table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName, ki.conditions->fields, ki.conditions->values, ki.conditions->conditionsLength);
 			break;
 		case UPDATE:
-			//table.updateTable(...)
+			table.updateTable(ki.tableName, ki.updateArgs->fields, ki.updateArgs->values, ki.updateArgs->conditionsLength);
 			break;
 		case INSERT_INTO:
 			//table.insertInto(...)
@@ -50,6 +50,12 @@ int main() {
 			break;
 		case DISPLAY_TABLE:
 			//table.displayTable(...)
+			break;
+		case CREATE_INDEX:
+			table.createIndex(ki.tableName, ki.indexName, ki.columnNameForCreateIndex);
+			break;
+		case DROP_INDEX:
+			// table.dropIndex(...)
 			break;
 		default:
 			break;
