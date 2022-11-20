@@ -10,6 +10,7 @@ enum ExceptionType {
 	NO_FIELDS_SELECTED,
 	INVALID_COMMAS,
 	FORBIDDEN_WORDS_USED,
+	INVALID_CONDITION
 };
 
 class Exceptions : public std::exception {
@@ -37,6 +38,8 @@ public:
 			return "Cannot have fields or tables named with forbidden words. Please type again:\n"; // remains to implement
 		case PARANTHESIS_MISMATCH:
 			return "You missmatched paranthesis. Please type again:\n"; // remains to implement
+		case INVALID_CONDITION:
+			return "Invalid input after WHERE clause. Please type again:\n";
 		default:
 			break;
 		}
