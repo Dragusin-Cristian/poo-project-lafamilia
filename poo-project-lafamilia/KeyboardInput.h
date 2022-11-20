@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "./Exceptions.h";
+#include "Util.h";
 using namespace std;
 
 
@@ -32,9 +33,8 @@ private:
 
 	static void checkCommandValidity(string input) {
 		// remove all white spaces before the actual command starts (maybe the user is drunk :) ):
-		while (input[0] == ' ') {
-			input.erase(0, 1);
-		}
+		Util::removeWhiteSpacesBefore(&input);
+
 		// check for the first 2 words:
 		if (!(
 			input.find("CREATE TABLE ") == 0 ||
@@ -52,7 +52,7 @@ private:
 		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
 	}
 
-	// some way to interpret the commands:
+
 	void setCommandType() {
 		if (allWordsBeforeFirstParanthesis.find("CREATE TABLE ") == 0) {
 			commandType = CREATE_TABLE;
@@ -87,21 +87,73 @@ private:
 		switch (commandType)
 		{
 		case CREATE_TABLE:
-			tableName = allWordsBeforeFirstParanthesis.erase(0, 13); // LENGTH OF "CREATE TABLE "
+			validateCreateTable();
+			break;
+		case DROP_TABLE:
+			validateDropTable();
+			break;
+		case DISPLAY_TABLE:
+			validateDisplayTable();
+			break;
+		case CREATE_INDEX:
+			validateCreateIndex();
+			break;
+		case DROP_INDEX:
+			validateDropIndex();
+			break;
+		case INSERT_INTO:
+			validateInsertInto();
+			break;
+		case DELETE_FROM:
+			validateDeleteFrom();
+			break;
+		case SELECT:
+			validateSelectFrom();
+			break;
+		case UPDATE:
+			validateUpdate();
 			break;
 		default:
 			break;
 		}
 
-		// remove all white spaces before the actual tableName starts (maybe the user is drunk :) ):
-		while (tableName[0] == ' ') {
-			tableName.erase(0, 1);
-		}
-		// remove all white spaces after the actual tableName
-		while (tableName[tableName.size()-1] == ' ') {
-			tableName.erase(tableName.size() - 1, tableName.size());
-		}
+		Util::removeWhiteSpacesBefore(&tableName);
+		Util::removeAllWhiteSpacesAfter(&tableName);
 	}
+
+	//Cristi:
+	void validateCreateTable() {
+		tableName = allWordsBeforeFirstParanthesis.erase(0, 13); // LENGTH OF "CREATE TABLE "
+	}
+	void validateSelectFrom() {
+		// ...
+	}
+	void validateUpdate() {
+		// ...
+	}
+	void validateCreateIndex() {
+		// ...
+	}
+	void validateDropIndex() {
+		// ...
+	}
+
+	// Stefan:
+	void validateInsertInto() {
+		//tableName = ...
+	}
+	void validateDeleteFrom() {
+		// ...
+	}
+
+	// Adnrei:
+	void validateDropTable() {
+		// ...
+	}
+	void validateDisplayTable() {
+		// ...
+	}
+
 
 	// should return ["id INTEGER 1", "name TEXT Gigi"]
 	string* splitCreateTableArguments(string argsString, int* argsNo) {

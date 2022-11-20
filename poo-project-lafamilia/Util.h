@@ -25,6 +25,20 @@ public:
 		return pos;
 	}
 
+	static void removeWhiteSpacesBefore(std::string* str) {
+		// remove all white spaces before the actual str content
+		while ((*str)[0] == ' ') {
+			(*str).erase(0, 1);
+		}
+	}
+
+	static void removeAllWhiteSpacesAfter(std::string* str) {
+		// remove all white spaces after the actual str content
+		while ((*str)[(*str).size() - 1] == ' ') {
+			(*str).erase((*str).size() - 1, (*str).size());
+		}
+	}
+
 	//This is modified from stack overflow: https://stackoverflow.com/questions/20303821/how-to-check-if-string-is-in-array-of-strings
 	static bool in_array(std::string value, const char* const* array, int size)
 	{
