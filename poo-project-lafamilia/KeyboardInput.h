@@ -52,7 +52,6 @@ private:
 		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
 	}
 
-
 	void setCommandType() {
 		if (allWordsBeforeFirstParanthesis.find("CREATE TABLE ") == 0) {
 			commandType = CREATE_TABLE;
