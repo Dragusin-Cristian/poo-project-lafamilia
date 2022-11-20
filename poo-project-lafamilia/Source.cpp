@@ -18,9 +18,11 @@ int main() {
 
 		ArgumentCreateTable** argsArrayCreateTable = new ArgumentCreateTable * [ki.argsLength];
 
-		/*for (int i = 0; i < ki.argsLength; i++) {
-			argsArrayCreateTable[i] = new ArgumentCreateTable(ki.argsStringArray[i]);
-		}*/
+		if (ki.commandType == CREATE_TABLE) {
+			for (int i = 0; i < ki.argsLength; i++) {
+				argsArrayCreateTable[i] = new ArgumentCreateTable(ki.argsStringArray[i]);
+			}
+		}
 
 
 		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
@@ -30,7 +32,10 @@ int main() {
 		{
 		case CREATE_TABLE:
 			table.createTable(ki.tableName, argsArrayCreateTable, ki.argsLength);
+			break;
 		case SELECT:
+			table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName, ki.conditions->fields, ki.conditions->values, ki.conditions->conditionsLength);
+			break;
 			//table.selectFromTable(...)
 		case UPDATE:
 			//table.updateTable(...)

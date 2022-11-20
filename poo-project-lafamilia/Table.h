@@ -24,7 +24,7 @@ public:
 	}
 
 	// Cristi:
-	void selectFromTable(string* selectFields, int selectFieldsLength, string tableName) {
+	void selectFromTable(string* selectFields, int selectFieldsLength, string tableName, string* conditionFileds, string* conditionValues, int conditionsLength) {
 		assert(selectFields != nullptr && selectFieldsLength > 0, "Null fields reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
@@ -34,6 +34,14 @@ public:
 			cout << selectFields[i] << ", ";
 		}
 		cout << "selected from table " << tableName << endl;
+		if (conditionFileds != nullptr && conditionValues != nullptr && conditionsLength > 0) {
+			cout << "with the conditions: ";
+
+			for (int i = 0; i < conditionsLength; i++) {
+				cout << conditionFileds[i] << " = " << conditionValues[i] << ", ";
+			}
+		}
+
 	}
 
 	// Cristi:
