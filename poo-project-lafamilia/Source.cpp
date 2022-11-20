@@ -2,6 +2,7 @@
 #include "KeyboardInput.h";
 #include "ArgumentCreateTable.h";
 #include "Exceptions.h";
+#include "Table.h";
 using namespace std;
 
 void deleteKI(KeyboardInput* ki) {
@@ -21,9 +22,17 @@ int main() {
 			argsArrayCreateTable[i] = new ArgumentCreateTable(ki.argsStringArray[i]);
 		}
 
+
 		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
-		cout << ki.command << endl;
-		ki.interpretArguments();
+
+		Table table;
+		switch (ki.commandType)
+		{
+		case CREATE_TABLE:
+			table.createTable(ki.tableName, argsArrayCreateTable, ki.argsLength);
+		default:
+			break;
+		}
 
 		return 0;
 	}

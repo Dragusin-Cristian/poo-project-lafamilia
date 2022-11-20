@@ -12,32 +12,24 @@ enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_I
 class KeyboardInput {
 public:
 	CommandType commandType;
-	int argsLength;
-	string command;
+	string tableName;
 	string* argsStringArray;
+	int argsLength;
 
 	KeyboardInput() {
 		argsLength = 0;
-		command = readCommand(&argsLength);
-		interpretCommands();
+		allWordsBeforeFirstParanthesis = readCommand(&argsLength);
+		setCommandType();
+		splitCommandAndTableName();
 	}
 
-	// some way to interpret the arguments found in the command
-	// *args may look like ["id INTEGER 1", "name TEXT Gigi"]
-	void interpretArguments() {
-
-		// Interpret somehow the values from the arguments ... 
-		for (int i = 0; i < argsLength; i++) {
-			cout << argsStringArray[i] << endl;
-		}
-		// validateArguments
-	}
-
-	~KeyboardInput() {
-		cout << "Destructor called for KI "<< command << endl;
-	}
+	//~KeyboardInput() {
+	//	cout << "Destructor called for KI "<< allWordsBeforeFirstParanthesis << endl;
+	//}
 
 private:
+	string allWordsBeforeFirstParanthesis; // CREATE TABLE Stud // for example
+
 	static void checkCommandValidity(string input) {
 		// remove all white spaces before the actual command starts (maybe the user is drunk :) ):
 		while (input[0] == ' ') {
@@ -61,38 +53,58 @@ private:
 	}
 
 	// some way to interpret the commands:
-	void interpretCommands() {
-		if (command.find("CREATE TABLE ") == 0) {
+	void setCommandType() {
+		if (allWordsBeforeFirstParanthesis.find("CREATE TABLE ") == 0) {
 			commandType = CREATE_TABLE;
 		}
-		else if (command.find("DROP TABLE ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("DROP TABLE ") == 0) {
 			commandType = DROP_TABLE;
 		}
-		else if (command.find("DISPLAY TABLE ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("DISPLAY TABLE ") == 0) {
 			commandType = DISPLAY_TABLE;
 		}
-		else if (command.find("CREATE INDEX ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("CREATE INDEX ") == 0) {
 			commandType = CREATE_INDEX;
 		}
-		else if (command.find("DROP INDEX ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("DROP INDEX ") == 0) {
 			commandType = DROP_INDEX;
 		}
-		else if (command.find("INSERT INTO ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("INSERT INTO ") == 0) {
 			commandType = INSERT_INTO;
 		}
-		else if (command.find("DELETE FROM ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("DELETE FROM ") == 0) {
 			commandType = DELETE_FROM;
 		}
-		else if (command.find("SELECT ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("SELECT ") == 0) {
 			commandType = SELECT;
 		}
-		else if (command.find("UPDATE ") == 0) {
+		else if (allWordsBeforeFirstParanthesis.find("UPDATE ") == 0) {
 			commandType = UPDATE;
 		}
 	}
 
+	void splitCommandAndTableName() {
+		switch (commandType)
+		{
+		case CREATE_TABLE:
+			tableName = allWordsBeforeFirstParanthesis.erase(0, 13); // LENGTH OF "CREATE TABLE "
+			break;
+		default:
+			break;
+		}
+
+		// remove all white spaces before the actual tableName starts (maybe the user is drunk :) ):
+		while (tableName[0] == ' ') {
+			tableName.erase(0, 1);
+		}
+		// remove all white spaces after the actual tableName
+		while (tableName[tableName.size()-1] == ' ') {
+			tableName.erase(tableName.size() - 1, tableName.size());
+		}
+	}
+
 	// should return ["id INTEGER 1", "name TEXT Gigi"]
-	string* splitArguments(string argsString, int* argsNo) {
+	string* splitCreateTableArguments(string argsString, int* argsNo) {
 		// remove the last character (the closing paranthesis or extra spaces)
 		while (argsString[argsString.size()-1] == ' ' || argsString[argsString.size()-1] == ')') {
 			argsString.pop_back();
@@ -129,31 +141,10 @@ private:
 	}
 
 
-	// just get the input and check for validity:
-	//void getInput(string* input) {
-	//	getline(cin, *input);
-
-	//	try
-	//	{
-	//		checkCommandValidity(*input);
-	//	}
-	//	catch (Exceptions e)
-	//	{
-	//		cout << e.invalid_command();
-	//		getInput(input);
-	//	}
-	//}
-
 	// Basically, the first function that is called for manipulating the input.
 	string readCommand(int* argsLength) {
 		string input, word;
-		//* uncomment when developping:
-		//input = "CREATE TABLE Student(id NUMBER PRIMARY KEY, name TEXT Cristi, ceva CEVA)";
-		//cout << input << endl << endl;
 
-		//* and comment while developping:
-		
-		//getInput(&input);
 		getline(cin, input);
 		checkCommandValidity(input);
 
@@ -166,7 +157,7 @@ private:
 				word = "";
 			}
 			else if (input[i] == '(') {
-				this->argsStringArray = splitArguments(input.substr(i + 1), argsLength);
+				this->argsStringArray = splitCreateTableArguments(input.substr(i + 1), argsLength);
 				//interpretArguments(args, argsNo);
 				break;
 			}
