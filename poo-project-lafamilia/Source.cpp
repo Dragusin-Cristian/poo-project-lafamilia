@@ -18,9 +18,9 @@ int main() {
 
 		ArgumentCreateTable** argsArrayCreateTable = new ArgumentCreateTable * [ki.argsLength];
 
-		for (int i = 0; i < ki.argsLength; i++) {
+		/*for (int i = 0; i < ki.argsLength; i++) {
 			argsArrayCreateTable[i] = new ArgumentCreateTable(ki.argsStringArray[i]);
-		}
+		}*/
 
 
 		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
@@ -35,7 +35,7 @@ int main() {
 		case UPDATE:
 			//table.updateTable(...)
 		case INSERT_INTO:
-			//table.insertInto(...)
+			ki.publicValidateInsertIntoForDebuggingDeleteLater();
 		case DELETE_FROM:
 			//table.deleteFrom(...)
 		case DROP_TABLE:
