@@ -2,6 +2,7 @@
 #include <string>
 #include "./Exceptions.h";
 #include "Util.h";
+#include "Condition.h";
 using namespace std;
 
 
@@ -27,8 +28,11 @@ public:
 	string tableName;
 	string* argsStringArray;
 	int argsLength;
+	bool hasCondition;
+	Condition* conditions;
 
 	KeyboardInput() {
+		hasCondition = false;
 		argsLength = 0;
 		allWordsBeforeFirstParanthesis = readCommand(&argsLength);
 		setCommandType();
@@ -61,10 +65,13 @@ private:
 			input.find("DROP INDEX ") == 0 ||
 			input.find("INSERT INTO ") == 0 ||
 			input.find("DELETE FROM ") == 0 ||
-			input.find("SELECT ") == 0 ||
-			input.find("UPDATE ") == 0
+			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && input.find("(") == string::npos) ||
+			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos)
 			)) {
 			throw Exceptions(INVALID_COMMAND);
+		}
+		if (input.find(",,") != string::npos) {
+			throw Exceptions(INVALID_COMMAS);
 		}
 		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
 	}
@@ -142,7 +149,62 @@ private:
 		this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_CREATE_TABLE_COMMAND);
 	}
 	void validateSelectFrom() {
-		// ...
+		cout << allWordsBeforeFirstParanthesis<<endl;
+		// TAKE THE ARGUMENTS:
+		string argsString = allWordsBeforeFirstParanthesis.substr(7, allWordsBeforeFirstParanthesis.find(" FROM ")-7);
+		Util::removeWhiteSpacesBefore(&argsString);
+		Util::removeAllWhiteSpacesAfter(&argsString);
+		if (argsString == "ALL") {
+			argsStringArray = new string[1];
+			argsStringArray[0] = "ALL";
+		}
+		else if (argsString.size() == 0) {
+			throw Exceptions(NO_FIELDS_SELECTED);
+		}
+		else {
+			// count the args length:
+			int i = 0;
+			while (argsString[i] != NULL) {
+				if (argsString[i] == ',') {
+					argsLength++;
+				}
+				i++;
+			}
+			argsLength++;
+
+			// set the argsStringArray:
+			int j = 0;
+			string arg = "";
+			argsStringArray = new string[argsLength];
+			for (int i = 0; i < argsString.size(); i++) {
+				if (argsString[i] == ',') {
+					Util::removeWhiteSpacesBefore(&arg);
+					Util::removeAllWhiteSpacesAfter(&arg);
+					argsStringArray[j] = arg;
+					arg = "";
+					j++;
+				}
+				else {
+					arg.push_back(argsString[i]);
+				}
+			}
+			Util::removeWhiteSpacesBefore(&arg);
+			Util::removeAllWhiteSpacesAfter(&arg);
+			argsStringArray[j] = arg;
+		}
+
+		// CHECK FOR WHERE CONDITION:
+		hasCondition = allWordsBeforeFirstParanthesis.find("WHERE") != string::npos;
+		// TAKE THE TABLE NAME:
+		if (hasCondition) {
+			tableName = allWordsBeforeFirstParanthesis.substr(allWordsBeforeFirstParanthesis.find("FROM ") + 5, allWordsBeforeFirstParanthesis.find(" WHERE")-(allWordsBeforeFirstParanthesis.find("FROM ") + 5));
+			
+			string afterWhere = allWordsBeforeFirstParanthesis.substr(allWordsBeforeFirstParanthesis.find("WHERE ") + 6);
+			conditions = new Condition(afterWhere);
+		}
+		else {
+			tableName = allWordsBeforeFirstParanthesis.substr(allWordsBeforeFirstParanthesis.find("FROM ") + 5);
+		}
 	}
 	void validateUpdate() {
 		// ...
