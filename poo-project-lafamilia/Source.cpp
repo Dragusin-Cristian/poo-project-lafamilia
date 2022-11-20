@@ -30,6 +30,18 @@ int main() {
 		{
 		case CREATE_TABLE:
 			table.createTable(ki.tableName, argsArrayCreateTable, ki.argsLength);
+		case SELECT:
+			//table.selectFromTable(...)
+		case UPDATE:
+			//table.updateTable(...)
+		case INSERT_INTO:
+			//table.insertInto(...)
+		case DELETE_FROM:
+			//table.deleteFrom(...)
+		case DROP_TABLE:
+			//table.dropTable(...)
+		case DISPLAY_TABLE:
+			//table.displayTable(...)
 		default:
 			break;
 		}
@@ -53,6 +65,9 @@ int main() {
 // DELETE FROM Cats WHERE name="Cathy"; // Stefan
 // SELECT id | ALL FROM Cats WHERE name="Cathy"; - WHERE condition is optional // Cristi
 // UPDATE Cats SET name="Amanda" // Cristi
+
+// CREATE INDEX [IF NOT EXISTS] index_name ON table_name
+// DROP INDEX index_name
 
 
 // - array iteration:

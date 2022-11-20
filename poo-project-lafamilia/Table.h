@@ -36,6 +36,7 @@ public:
 		cout << "selected from table " << tableName << endl;
 	}
 
+	// Cristi:
 	void updateTable(string tableName, string* fieldsToSet, int fieldsLength, string* values, int valuesLength) {
 		assert(fieldsToSet != nullptr && fieldsLength > 0, "Null fields reference passed.");
 		assert(values != nullptr && valuesLength > 0, "Null fields reference passed.");
