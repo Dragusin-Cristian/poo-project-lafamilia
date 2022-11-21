@@ -40,14 +40,29 @@ public:
 	KeyboardInput() {
 		hasCondition = false;
 		argsLength = 0;
+	}
+
+	void initializeKi() {
 		allWordsBeforeFirstParanthesis = readCommand(&argsLength);
 		setCommandType();
 		splitCommandAndTableName();
 	}
 
-	//~KeyboardInput() {
-	//	cout << "Destructor called for KI "<< allWordsBeforeFirstParanthesis << endl;
-	//}
+	~KeyboardInput() {
+		if (argsStringArray != nullptr) {
+			argsStringArray->~string();
+			argsStringArray = nullptr;
+		}
+		if (conditions != nullptr) {
+			conditions->~StringStructureToArray();
+			conditions = nullptr;
+		}
+		if (updateArgs != nullptr) {
+			updateArgs->~StringStructureToArray();
+			updateArgs = nullptr;
+		}
+		cout << "Destructor called for KI "<< allWordsBeforeFirstParanthesis << endl;
+	}
 
 
 private:
@@ -156,7 +171,15 @@ private:
 
 	//Cristi:
 	void validateCreateTable() {
-		this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_CREATE_TABLE_COMMAND);
+		try
+		{
+			this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_CREATE_TABLE_COMMAND - 1);
+		}
+		catch (const std::exception&)
+		{
+			cout << "Here is the error";
+		}
+
 	}
 	void validateSelectFrom() {
 		// TAKE THE ARGUMENTS:

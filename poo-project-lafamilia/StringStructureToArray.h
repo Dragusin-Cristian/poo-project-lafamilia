@@ -20,6 +20,22 @@ public:
 		splitFieldsAndValues();
 	}
 
+	~StringStructureToArray() {
+		if (fields != nullptr) {
+			fields->~string();
+			fields = nullptr;
+		}
+		if (values != nullptr) {
+			values->~string();
+			values = nullptr;
+		}
+		if (conditions != nullptr) {
+			conditions->~string();
+			conditions = nullptr;
+		}
+		cout << "StringStructureToArray destructed" << endl;
+	}
+
 private:
 	string stringToWorkWith;
 	string* conditions;

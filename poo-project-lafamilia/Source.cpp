@@ -11,12 +11,16 @@ void deleteKI(KeyboardInput* ki) {
 }
 
 int main() {
-	// TO-DO LATER: Handle memory leaks:
+
+	KeyboardInput ki;
+	ArgumentCreateTable** argsArrayCreateTable;
+	Table table;
+
 	try
 	{
-		KeyboardInput ki;
+		ki.initializeKi();
 
-		ArgumentCreateTable** argsArrayCreateTable = new ArgumentCreateTable * [ki.argsLength];
+		 argsArrayCreateTable = new ArgumentCreateTable * [ki.argsLength];
 
 		if (ki.commandType == CREATE_TABLE) {
 			for (int i = 0; i < ki.argsLength; i++) {
@@ -27,7 +31,6 @@ int main() {
 
 		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
 
-		Table table;
 		switch (ki.commandType)
 		{
 		case CREATE_TABLE:
@@ -65,6 +68,10 @@ int main() {
 	}
 	catch (Exceptions e)
 	{
+		// deinatialize alocated and useless memory:
+		ki.~KeyboardInput();
+		table.~Table();
+
 		cout << e.handleError();
 		main();
 	}

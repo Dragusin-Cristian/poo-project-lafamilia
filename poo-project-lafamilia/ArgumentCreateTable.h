@@ -23,6 +23,10 @@ public:
 		this->defaultValue = arguments.substr(index_secondSpace + 1, arguments.size() - index_secondSpace);
 	}
 
+	~ArgumentCreateTable() {
+		cout << "ArgumentCreateTable deleted" << endl;
+	}
+
 	//GETTERS:
 	std::string getColumnName()
 	{

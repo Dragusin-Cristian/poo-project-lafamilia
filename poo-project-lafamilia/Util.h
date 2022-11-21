@@ -1,6 +1,6 @@
 #pragma once
-
 #include <string>
+#include "Exceptions.h";
 
 //This is a class for our "global" functions (public static functions) that can be used as general utilities
 //in any place of the code.
@@ -26,6 +26,9 @@ public:
 	}
 
 	static void removeWhiteSpacesBefore(std::string* str) {
+		if (*str == "") {
+			throw Exceptions(INVALID_TABLE_NAME);
+		}
 		// remove all white spaces before the actual str content
 		while ((*str)[0] == ' ') {
 			(*str).erase(0, 1);
@@ -33,6 +36,9 @@ public:
 	}
 
 	static void removeAllWhiteSpacesAfter(std::string* str) {
+		if (*str == "") {
+			throw Exceptions(INVALID_TABLE_NAME);
+		}
 		// remove all white spaces after the actual str content
 		while ((*str)[(*str).size() - 1] == ' ') {
 			(*str).erase((*str).size() - 1, (*str).size());
