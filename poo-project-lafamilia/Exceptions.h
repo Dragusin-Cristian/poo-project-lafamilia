@@ -13,7 +13,8 @@ enum ExceptionType {
 	INVALID_CONDITION,
 	INVALID_TABLE_NAME,
 	INVALID_INDEX_NAME,
-	INVALID_COLUMN_NAME
+	INVALID_COLUMN_NAME,
+	INVALID_QUTES
 };
 
 class Exceptions : public std::exception {
@@ -37,10 +38,12 @@ public:
 			return "No fields selected. Please type again:\n";
 		case INVALID_COMMAS:
 			return "Invalid commas. Please type again:\n";
-		case FORBIDDEN_WORDS_USED:
+		case FORBIDDEN_WORDS_USED: // like CREATE, TABLE, UPDATE, INDEX, SELECT, INSERT, INTO, DROP, DISPLAY, DELETE, FROM, WHERE, SET 
 			return "Cannot have fields or tables named with forbidden words. Please type again:\n"; // remains to implement
-		case PARANTHESIS_MISMATCH:
+		case PARANTHESIS_MISMATCH: // check if the number of ( equals the number of ) in the rawInput
 			return "You missmatched paranthesis. Please type again:\n"; // remains to implement
+		case INVALID_QUTES: // the number of " should be even in rawInput
+			return "You mismatched the quotes. Please type again:\n";
 		case INVALID_CONDITION:
 			return "Invalid input after WHERE clause. Please type again:\n";
 		case INVALID_TABLE_NAME:
