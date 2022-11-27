@@ -1,1 +1,1 @@
-Viata e grele, nu toti poate
+The best database that you will ever have used in your entire life. 
