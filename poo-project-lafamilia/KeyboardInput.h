@@ -26,6 +26,7 @@ public:
 	static const int LENGTH_WHERE_CONDITION;
 	static const int LENGTH_SET_COMMAND;
 	static const int LENGTH_ON_COMMAND;
+	static const int LENGTH_FORBIDDEN_WORDS;
 
 	CommandType commandType;
 	string tableName;
@@ -36,6 +37,8 @@ public:
 	StringStructureToArray* updateArgs;
 	string indexName;
 	string columnNameForCreateIndex;
+
+	string forbiddenWords[13] = { "CREATE", "TABLE", "UPDATE", "INDEX", "SELECT", "INSERT", "INTO", "DROP", "DISPLAY", "DELETE", "FROM", "WHERE", "SET" };
 
 	KeyboardInput() {
 		hasCondition = false;
@@ -69,40 +72,22 @@ private:
 	string allWordsBeforeFirstParanthesis; // CREATE TABLE Stud // for example
 	string rawInput;
 
-	static void checkParanthesisMismatch(string input) {
-		int extraParanthesisCounter = 0; //adds 1 for each '(' and subtracts 1 for each ')'
-		for (int i = 0; i < input.size(); i++) {
-			if (input[i] == '(')
-				extraParanthesisCounter++;
-			else if (input[i] == ')')
-				extraParanthesisCounter--;
-
-			//if extraParanthesisCounter is negative it means that you closed a paranthesis before you even opened it
-			if (extraParanthesisCounter < 0)
-				throw Exceptions(PARANTHESIS_MISMATCH);
-		}
-
-		//if extraParanthesisCounter is different from 0 at the end then it means that the number of '(' is different from the number of ')'
-		if (extraParanthesisCounter != 0)
-			throw Exceptions(PARANTHESIS_MISMATCH);
-	}
-
-	static void checkInvalidQuotes(string input) {
-		int nrOfQuotes = 0;
-		
-		for (int i = 0; i < input.size(); i++) {
-			if (input[i] == '"')
-				nrOfQuotes++;
-		}
-
-		if (nrOfQuotes % 2 == 1)
-			throw Exceptions(INVALID_QUTES);
-	}
-
-	static void checkCommandValidity(string input) {
+	void checkCommandValidity(string input) {
 		// remove all white spaces before the actual command starts (maybe the user is drunk :) ):
 		Util::removeWhiteSpacesBefore(&input);
 
+		checkIfCommandsExist(input);
+		checkDoubleQuotesValidity(input);
+		checkForbiddenWords(input);
+	}
+
+	void checkTableNameValidity() {
+		if (tableName == "" || tableName.find(" ") !=string::npos ) {
+			throw Exceptions(INVALID_TABLE_NAME);
+		}
+	} 
+
+	void checkIfCommandsExist(string input) {
 		// check for the first 2 words:
 		if (!(
 			input.find("CREATE TABLE ") == 0 ||
@@ -110,24 +95,113 @@ private:
 			input.find("DISPLAY TABLE ") == 0 ||
 			(input.find("CREATE INDEX ") == 0 && input.find(" ON ") != string::npos) ||
 			input.find("DROP INDEX ") == 0 ||
-			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos ) ||
+			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos) ||
 			input.find("DELETE FROM ") == 0 ||
 			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && input.find("(") == string::npos) ||
 			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos && input.find("(") == string::npos)
 			)) {
 			throw Exceptions(INVALID_COMMAND);
 		}
+	}
+
+	void checkDoubleQuotesValidity(string input) {
 		if (input.find(",,") != string::npos) {
 			throw Exceptions(INVALID_COMMAS);
 		}
-		
-		KeyboardInput::checkParanthesisMismatch(input);
-		KeyboardInput::checkInvalidQuotes(input);
+		//TODO: implement for more cases (paranthesis match, commas match, *swears*) // Andrei
 	}
 
-	void checkTableNameValidity() {
-		if (tableName == "" || tableName.find(" ") !=string::npos ) {
-			throw Exceptions(INVALID_TABLE_NAME);
+	void workCheckForbiddenWords(string* usedForCommand, int* lengthsOfUsedWords, int noOfUsedWords, string input) {
+
+		for (int i = 0; i < noOfUsedWords; i++) {
+			// erase the word, so we can check for the forbidden words below
+			input.erase(input.find(usedForCommand[i]), input.find(usedForCommand[i]) + lengthsOfUsedWords[i]);
+		}
+
+		// check for all forbidden words:
+		for (int i = 0; i < LENGTH_FORBIDDEN_WORDS; i++) {
+			if (input.find(forbiddenWords[i]) != string::npos) {
+				throw Exceptions(FORBIDDEN_WORDS_USED); 
+			}
+		}
+	}
+
+	void checkForbiddenWords(string input) {
+		switch (commandType)
+		{
+		case CREATE_TABLE:
+		{
+			string usedForCommand[2] = { "CREATE", "TABLE" };
+			int lengthsOfUsedWords[2] = { 6, 5 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 2, input);
+			break;
+		}
+		case DROP_TABLE:
+		{
+			string usedForCommand[2] = { "DROP", "TABLE" };
+			int lengthsOfUsedWords[2] = { 4, 5 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 2, input);
+			break;
+		}
+			break;
+		case DISPLAY_TABLE:
+		{
+			string usedForCommand[2] = { "DISPLAY", "TABLE" };
+			int lengthsOfUsedWords[2] = { 7, 5 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 2, input);
+			break;
+		}
+			break;
+		case CREATE_INDEX:
+		{
+			string usedForCommand[3] = { "CREATE", "INDEX", "ON"};
+			int lengthsOfUsedWords[3] = { 6, 5, 2 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 3, input);
+			break;
+		}
+			break;
+		case DROP_INDEX:
+		{
+			string usedForCommand[2] = { "DROP", "INDEX" };
+			int lengthsOfUsedWords[2] = { 4, 5 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 2, input);
+			break;
+		}
+			break;
+		case INSERT_INTO:
+		{
+			string usedForCommand[3] = { "INSERT", "INTO", "VALUES"};
+			int lengthsOfUsedWords[3] = { 6, 4, 6 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 3, input);
+			break;
+		}
+			break;
+		case DELETE_FROM:
+		{
+			string usedForCommand[2] = { "DELETE", "FROM" };
+			int lengthsOfUsedWords[2] = { 6, 4 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 2, input);
+			break;
+		}
+			break;
+		case SELECT:
+		{
+			string usedForCommand[2] = { "SELECT", "FROM" };
+			int lengthsOfUsedWords[2] = { 6, 4 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 2, input);
+			break;
+		}
+			break;
+		case UPDATE:
+		{
+			string usedForCommand[2] = { "UPDATE", "SET" };
+			int lengthsOfUsedWords[2] = { 6, 3 };
+			workCheckForbiddenWords(usedForCommand, lengthsOfUsedWords, 2, input);
+			break;
+		}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -518,3 +592,4 @@ const int KeyboardInput::LENGTH_UPDATE_COMMAND = 7;
 const int KeyboardInput::LENGTH_WHERE_CONDITION = 6;
 const int KeyboardInput::LENGTH_SET_COMMAND = 5; // Also count the space before SET
 const int KeyboardInput::LENGTH_ON_COMMAND = 4; // Also count the space before SET
+const int KeyboardInput::LENGTH_FORBIDDEN_WORDS = 13;
