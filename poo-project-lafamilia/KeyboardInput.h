@@ -389,15 +389,85 @@ private:
 
 	}
 
-	// Adnrei:
+	// Andrei:
 	void validateDropTable() {
-		// ...
+		//VALIDATE IF THE COMMAND HAS EXACTLY 3 WORDS
+
+		// VALIDATION CHECK 1 : CRASH THE PROGRAM IF TABLE NAME HAS SPACES
+		if (this->tableName.find(' ') != string::npos)
+			throw Exceptions(INVALID_COMMAND);
+		// VALIDATION CHECK 2 : CRASH THE PROGRAM IF TABLE NAME IS MISSING
+		string s = NULL;
+		if (this->tableName == s)
+			throw Exceptions(INVALID_COMMAND);
+		// VALIDATION CHECK 3: CRASH THE PROGRAM IF WEIRD CHARACTERS(" OR ,)
+		/* string weirdCharacter = "~";
+		string weirdCharacter1 = "!";
+		string weirdCharacter2 = "@";
+		string weirdCharacter3 = "#";
+		string weirdCharacter4 = "$";
+		string weirdCharacter5 = "%";
+		string weirdCharacter6 = "^";
+		string weirdCharacter7 = "&";
+		string weirdCharacter8 = "*"; */
+		string weirdCharacter9 = "(";
+		string weirdCharacter0 = ")";
+		string weirdCharacterA = ",";
+		string weirdCharacterC = "'";
+		if (
+			this->tableName.find(weirdCharacterA) != string::npos &&
+			this->tableName.find(weirdCharacterC) != string::npos &&
+			this->tableName.find(weirdCharacter9) != string::npos &&
+			this->tableName.find(weirdCharacter0) != string::npos
+			)
+			throw Exceptions(INVALID_COMMAND);
 	}
 	void validateDisplayTable() {
-		// ...
+		// VALIDATION CHECK 1 : CRASH THE PROGRAM IF TABLE NAME HAS SPACES
+		if (this->tableName.find(' ') != string::npos)
+			throw Exceptions(INVALID_COMMAND);
+		// VALIDATION CHECK 2 : CRASH THE PROGRAM IF TABLE NAME IS MISSING
+		string s = NULL;
+		if (this->tableName == s)
+			throw Exceptions(INVALID_COMMAND);
+		// VALIDATION CHECK 3: CRASH THE PROGRAM IF WEIRD CHARACTERS( " OR ( OR ) OR ,  )
+		string weirdCharacterA = "(";
+		string weirdCharacterB = ")";
+		string weirdCharacterC = ",";
+		string weirdCharacterD = "'";
+		if (
+			this->tableName.find(weirdCharacterA) != string::npos &&
+			this->tableName.find(weirdCharacterB) != string::npos &&
+			this->tableName.find(weirdCharacterC) != string::npos &&
+			this->tableName.find(weirdCharacterD) != string::npos
+			)
+			throw Exceptions(INVALID_COMMAND);
 	}
 	void validateDropIndex() {
-		// ...
+		// VALIDATE CHECK 1: CRASH THE PROGRAM IF INDEX_NAME IS MISSING
+		string s = NULL;
+		if (this->indexName == s)
+			throw Exceptions(INVALID_COMMAND);
+
+		// VALIDATE CHECK 2 : CRASH THE PROGRAM IF INDEX_NAME HAS SPACES
+		if (this->indexName.find(' ') != string::npos)
+			throw Exceptions(INVALID_COMMAND);
+
+		// VALIDATE CHECK 3 : CRASH THE PROGRAM IF INDEX NAME HAS WEIRD CHARACTERS
+		string weirdCharacterA = "(";
+		string weirdCharacterB = ")";
+		string weirdCharacterC = ",";
+		string weirdCharacterD = "'";
+		if (
+			this->indexName.find(weirdCharacterA) != string::npos &&
+			this->indexName.find(weirdCharacterB) != string::npos &&
+			this->indexName.find(weirdCharacterC) != string::npos &&
+			this->indexName.find(weirdCharacterD) != string::npos
+			)
+			throw Exceptions(INVALID_COMMAND);
+
+		// VALIDATE CHECK 4: CRASH THE PROGRAM IF DROPINDEX (legat)
+
 	}
 
 	// should return ["id INTEGER 1", "name TEXT Gigi"]
