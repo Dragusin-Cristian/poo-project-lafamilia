@@ -48,6 +48,7 @@ public:
 	void initializeKi() {
 		allWordsBeforeFirstParanthesis = readCommand(&argsLength);
 		setCommandType();
+		checkCommandValidity(this->rawInput);
 		splitCommandAndTableName();
 	}
 
@@ -581,7 +582,6 @@ private:
 		string input, word;
 
 		getline(cin, input);
-		checkCommandValidity(input);
 
 		this->rawInput = input;
 		this->rawInput = Util::trim(this->rawInput);
