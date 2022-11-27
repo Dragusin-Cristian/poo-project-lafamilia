@@ -77,8 +77,10 @@ private:
 		Util::removeWhiteSpacesBefore(&input);
 
 		checkIfCommandsExist(input);
-		checkDoubleQuotesValidity(input);
+		checkDoubleCommasValidity(input);
 		checkForbiddenWords(input);
+		checkParanthesisMismatch(input);
+		checkInvalidQuotes(input);
 	}
 
 	void checkTableNameValidity() {
@@ -104,7 +106,37 @@ private:
 		}
 	}
 
-	void checkDoubleQuotesValidity(string input) {
+	void checkParanthesisMismatch(string input) {
+		int extraParanthesisCounter = 0; //adds 1 for each '(' and subtracts 1 for each ')'
+		for (int i = 0; i < input.size(); i++) {
+			if (input[i] == '(')
+				extraParanthesisCounter++;
+			else if (input[i] == ')')
+				extraParanthesisCounter--;
+
+			//if extraParanthesisCounter is negative it means that you closed a paranthesis before you even opened it
+			if (extraParanthesisCounter < 0)
+				throw Exceptions(PARANTHESIS_MISMATCH);
+		}
+
+		//if extraParanthesisCounter is different from 0 at the end then it means that the number of '(' is different from the number of ')'
+		if (extraParanthesisCounter != 0)
+			throw Exceptions(PARANTHESIS_MISMATCH);
+	}
+
+	void checkInvalidQuotes(string input) {
+		int nrOfQuotes = 0;
+
+		for (int i = 0; i < input.size(); i++) {
+			if (input[i] == '"')
+				nrOfQuotes++;
+		}
+
+		if (nrOfQuotes % 2 == 1)
+			throw Exceptions(INVALID_QUTES);
+	}
+
+	void checkDoubleCommasValidity(string input) {
 		if (input.find(",,") != string::npos) {
 			throw Exceptions(INVALID_COMMAS);
 		}
