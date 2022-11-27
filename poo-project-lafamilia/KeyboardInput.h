@@ -27,6 +27,7 @@ public:
 	static const int LENGTH_SET_COMMAND;
 	static const int LENGTH_ON_COMMAND;
 	static const int LENGTH_FORBIDDEN_WORDS;
+	static const int LENGTH_VALUES_KEYWORD;
 
 	CommandType commandType;
 	string tableName;
@@ -452,50 +453,56 @@ private:
 		if (this->rawInput[this->rawInput.size() - 1] != ')')
 			throw Exceptions(INVALID_COMMAND);
 
+		int index_firstSpaceAfterTableName = KeyboardInput::LENGTH_INSERT_INTO_COMMAND;
+		while (this->rawInput[index_firstSpaceAfterTableName] != ' ')
+			index_firstSpaceAfterTableName++;
 
-		this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_INSERT_INTO_COMMAND);
+		this->tableName = this->rawInput.substr(
+			KeyboardInput::LENGTH_INSERT_INTO_COMMAND, 
+			index_firstSpaceAfterTableName - KeyboardInput::LENGTH_INSERT_INTO_COMMAND);
+
 
 		//VALIDATION CHECK 2: CRASH THE PROGRAM IF TABLE NAME HAS SPACES
 		if (this->tableName.find(' ') != string::npos)
 			throw Exceptions(INVALID_COMMAND);
 
-		string argsFieldsString, argsValuesString;
 
-		int indexFirstOpenParanthesis = KeyboardInput::LENGTH_INSERT_INTO_COMMAND + this->tableName.size();
+		string substrWhereVALUESisSupposedToBe = this->rawInput.substr(KeyboardInput::LENGTH_INSERT_INTO_COMMAND 
+			+ this->tableName.size()  
+			+ 1, 
+			KeyboardInput::LENGTH_VALUES_KEYWORD);
+
+		//VALIDATION CHECK 3: CRASH THE PROGRAM IF YOU DON'T SEE " VALUES " AFTER THE FIRST PARANTHESIS
+		if (substrWhereVALUESisSupposedToBe != "VALUES")
+			throw Exceptions(INVALID_COMMAND);
+
+
+		string argsValuesString;
+
+		int indexFirstOpenParanthesis = KeyboardInput::LENGTH_INSERT_INTO_COMMAND + this->tableName.size() + 1 + KeyboardInput::LENGTH_VALUES_KEYWORD;
+		while (this->rawInput[indexFirstOpenParanthesis] == ' ')
+			indexFirstOpenParanthesis++;
 
 		//until we find the ')' character, keep increasing the index of it by 1
 		int indexFirstClosedParanthesis = indexFirstOpenParanthesis;
 		while (this->rawInput[indexFirstClosedParanthesis] != ')')
 			indexFirstClosedParanthesis++;
 
-		argsFieldsString = this->rawInput.substr(indexFirstOpenParanthesis + 1, indexFirstClosedParanthesis - indexFirstOpenParanthesis - 1); //+1 and -1 in order to not have paranthesis taken into account as well
-
-		const int LENGTH_OF_VALUES_KEYWORD_WITH_SPACES_AROUND_IT = 8;
-		string substrWhereVALUESisSupposedToBe = this->rawInput.substr(indexFirstClosedParanthesis + 1, LENGTH_OF_VALUES_KEYWORD_WITH_SPACES_AROUND_IT);
-
-
-		//VALIDATION CHECK 3: CRASH THE PROGRAM IF YOU DON'T SEE " VALUES " AFTER THE FIRST PARANTHESIS
-		if (substrWhereVALUESisSupposedToBe != " VALUES ")
+		//VALIDATION CHECK 4: CRASH THE PROGRAM IF PARANTHESIS AREN'T WHERE I EXPECTED THEM TO BE
+		if (this->rawInput[indexFirstOpenParanthesis] != '(' || this->rawInput[indexFirstClosedParanthesis] != ')')
 			throw Exceptions(INVALID_COMMAND);
 
 
-		int indexSecondOpenParanthesis = indexFirstClosedParanthesis + 1 + LENGTH_OF_VALUES_KEYWORD_WITH_SPACES_AROUND_IT;
-		int indexSecondClosedParanthesis = indexSecondOpenParanthesis;
-		while (this->rawInput[indexSecondClosedParanthesis] != ')')
-			indexSecondClosedParanthesis++;
+		argsValuesString = this->rawInput.substr(indexFirstOpenParanthesis + 1, indexFirstClosedParanthesis - indexFirstOpenParanthesis - 1); //+1 and -1 in order to not have paranthesis taken into account as well
 
-		argsValuesString = this->rawInput.substr(indexSecondOpenParanthesis + 1, indexSecondClosedParanthesis - indexSecondOpenParanthesis - 1); //+1 and -1 in order to not have paranthesis taken into account as well
-		
-		int noOfFieldArguments = 0;
-		string* argsFields = this->splitInsertIntoArguments(argsFieldsString, noOfFieldArguments);
+		int noOfArguments = 0;
+		string* argsValues = this->splitInsertIntoArguments(argsValuesString, noOfArguments);
 
-		int noOfValueArguments = 0;
-		string* argsValues = this->splitInsertIntoArguments(argsValuesString, noOfValueArguments);
-
-
-		//VALIDATION CHECK 4: CRASH THE PROGRAM IF THE NUMBER OF ARGUMENTS DON'T MATCH IN EACH PARANTHESIS
-		if (noOfFieldArguments != noOfValueArguments)
-			throw Exceptions(INVALID_ARGUMENT);
+		//VALIDATION CHECK 5: ARGUMENTS CAN NOT HAVE SPACE INSIDE THEM
+		for (int i = 0; i < noOfArguments; ++i) {
+			if (argsValues[i].find(' ') != string::npos)
+				throw Exceptions(INVALID_ARGUMENT);
+		}
 	}
 
 	void validateDeleteFrom() {
@@ -589,7 +596,7 @@ private:
 		string command;
 
 		// put the commands inside the array:
-		for (int i = 0; i < input.length(); i++) {
+		for (int i = 0; i < input.size(); i++) {
 			if (input[i] == ' ') {
 				command += word+" ";
 				word = "";
@@ -625,3 +632,4 @@ const int KeyboardInput::LENGTH_WHERE_CONDITION = 6;
 const int KeyboardInput::LENGTH_SET_COMMAND = 5; // Also count the space before SET
 const int KeyboardInput::LENGTH_ON_COMMAND = 4; // Also count the space before SET
 const int KeyboardInput::LENGTH_FORBIDDEN_WORDS = 13;
+const int KeyboardInput::LENGTH_VALUES_KEYWORD = 6; //without spaces around it
