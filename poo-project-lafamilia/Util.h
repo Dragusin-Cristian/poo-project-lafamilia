@@ -25,9 +25,9 @@ public:
 		return pos;
 	}
 
-	static void removeWhiteSpacesBefore(std::string* str) {
+	static void removeWhiteSpacesBefore(std::string* str, ExceptionType excType) {
 		if (*str == "") {
-			throw Exceptions(INVALID_TABLE_NAME);
+			throw Exceptions(excType);
 		}
 		// remove all white spaces before the actual str content
 		while ((*str)[0] == ' ') {
@@ -35,9 +35,9 @@ public:
 		}
 	}
 
-	static void removeAllWhiteSpacesAfter(std::string* str) {
+	static void removeAllWhiteSpacesAfter(std::string* str, ExceptionType excType) {
 		if (*str == "") {
-			throw Exceptions(INVALID_TABLE_NAME);
+			throw Exceptions(excType);
 		}
 		// remove all white spaces after the actual str content
 		while ((*str)[(*str).size() - 1] == ' ') {
