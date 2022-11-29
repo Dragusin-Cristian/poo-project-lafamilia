@@ -10,11 +10,12 @@ enum ExceptionType {
 	NO_FIELDS_SELECTED,
 	INVALID_COMMAS,
 	FORBIDDEN_WORDS_USED,
-	INVALID_CONDITION,
+	INVALID_FIELD,
 	INVALID_TABLE_NAME,
 	INVALID_INDEX_NAME,
 	INVALID_COLUMN_NAME,
-	INVALID_QUTES
+	INVALID_QUTES,
+	EMPTY_CONDITION_OR_ARGUMENT
 };
 
 class Exceptions : public std::exception {
@@ -44,14 +45,16 @@ public:
 			return "You missmatched paranthesis. Please type again:\n"; // remains to implement
 		case INVALID_QUTES: // the number of " should be even in rawInput
 			return "You mismatched the quotes. Please type again:\n";
-		case INVALID_CONDITION:
-			return "Invalid input after WHERE clause. Please type again:\n";
+		case INVALID_FIELD:
+			return "Invalid field passed. Please type again:\n";
 		case INVALID_TABLE_NAME:
 			return "Invalid table name. Please type again:\n";
 		case INVALID_INDEX_NAME:
 			return "Invalid index name. Please type again:\n";
 		case INVALID_COLUMN_NAME:
 			return "Invalid column name. Please type again:\n";
+		case EMPTY_CONDITION_OR_ARGUMENT:
+			return "Empty condition or argument. Please type again.\n";
 		default:
 			break;
 		}

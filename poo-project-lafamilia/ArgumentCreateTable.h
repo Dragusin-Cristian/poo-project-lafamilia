@@ -14,13 +14,6 @@ public:
 	{
 		arguments = this->removeExtraSpaces(arguments);
 		this->validateArgument(arguments);
-
-		int index_firstSpace = arguments.find(" ");
-		int index_secondSpace = Util::nthOccurrence(arguments, " ", 2);
-
-		this->columnName = arguments.substr(0, index_firstSpace);
-		this->type = arguments.substr(index_firstSpace + 1, index_secondSpace - index_firstSpace - 1);
-		this->defaultValue = arguments.substr(index_secondSpace + 1, arguments.size() - index_secondSpace);
 	}
 
 	~ArgumentCreateTable() {
@@ -43,13 +36,18 @@ public:
 		return this->defaultValue;
 	}
 
+	std::string getSize() {
+		return this->size;
+	}
+
 private:
 	std::string columnName = "";
 	std::string type = "";
 	std::string defaultValue = "";
+	std::string size;
 
 	static const char* const ALL_DATA_TYPES[];
-	static const int NUMBER_OF_TYPES = 5;
+	static const int NUMBER_OF_TYPES = 10;
 
 	
 	//INPUT: an argument list of the form "columnName TYPE defaultValue", ex: "id INTEGER 1"
@@ -72,16 +70,32 @@ private:
 	void validateArgument(std::string arguments)
 	{
 		arguments = this->removeExtraSpaces(arguments);
-		short int nrOfWords = std::count(arguments.cbegin(), arguments.cend(), ' ') + 1; //counts the number of spaces in arguments
-		if (nrOfWords != 3)
+		short int nrOfWords = std::count(arguments.cbegin(), arguments.cend(), ',') + 1; //counts the number of spaces in arguments
+		if (nrOfWords != 4)
 			throw Exceptions(INVALID_ARGUMENT);  //We will create an exception for this later in Exceptions.h
 		
-		int index_firstSpace = arguments.find(" ");
-		int index_secondSpace = Util::nthOccurrence(arguments, " ", 2);
+		int index_firstComma = arguments.find(",");
+		int index_secondComma = Util::nthOccurrence(arguments, ",", 2);
+		int index_thirdComma = Util::nthOccurrence(arguments, ",", 3);
 
-		std::string columnName = arguments.substr(0, index_firstSpace);
-		std::string type = arguments.substr(index_firstSpace + 1, index_secondSpace - index_firstSpace - 1);
-		std::string defaultValue = arguments.substr(index_secondSpace + 1, arguments.size() - index_secondSpace);
+		std::string columnName = arguments.substr(0, index_firstComma);
+		std::string type = arguments.substr(index_firstComma + 1, index_secondComma - index_firstComma - 1);
+		std::string size = arguments.substr(index_secondComma + 1, index_thirdComma - index_secondComma - 1);
+		std::string defaultValue = arguments.substr(index_thirdComma + 1, arguments.size() - index_thirdComma);
+
+		Util::removeWhiteSpacesBefore(&columnName, INVALID_ARGUMENT);
+		Util::removeAllWhiteSpacesAfter(&columnName, INVALID_ARGUMENT);
+
+		Util::removeWhiteSpacesBefore(&type, INVALID_ARGUMENT);
+		Util::removeAllWhiteSpacesAfter(&type, INVALID_ARGUMENT);
+
+		Util::removeWhiteSpacesBefore(&size, INVALID_ARGUMENT);
+		Util::removeAllWhiteSpacesAfter(&size, INVALID_ARGUMENT);
+
+		Util::removeWhiteSpacesBefore(&defaultValue, INVALID_ARGUMENT);
+		Util::removeAllWhiteSpacesAfter(&defaultValue, INVALID_ARGUMENT);
+
+		//cout << columnName << endl << type << endl << size << endl << defaultValue << endl;
 
 		//Check validity of type
 		if (Util::in_array(type, this->ALL_DATA_TYPES, this->NUMBER_OF_TYPES) == false) {
@@ -100,9 +114,15 @@ private:
 					throw Exceptions(INVALID_DEFAULT_VALUE);
 		}
 
+		// If we passed without any errors, set the fields:
+		this->columnName = columnName;
+		this->defaultValue = defaultValue;
+		this->size = size;
+		this->type = type;
+
 		//We don't need validation for BLOB, TEXT and NUMERIC, since any of those 3 would be valid if it had gotten to this point
 	}
 };
 
 //STATIC CONST VARIABLE DEFINITIONS:
-const char* const ArgumentCreateTable::ALL_DATA_TYPES[] = { "INTEGER", "TEXT", "BLOB", "REAL", "NUMERIC"};
+const char* const ArgumentCreateTable::ALL_DATA_TYPES[] = { "INTEGER", "integer", "TEXT", "text", "BLOB", "blob", "REAL", "real", "NUMERIC", "numeric"};

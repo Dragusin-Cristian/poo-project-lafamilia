@@ -17,7 +17,8 @@ public:
 		cout << "Table " << tableName << " created with the args ";
 		for (int i = 0; i < argsLength; i++) {
 			cout << args[i]->getColumnName() << " of type ";
-			cout << args[i]->getType() << " and default value ";
+			cout << args[i]->getType() << " having an allocated size of ";
+			cout << args[i]->getSize() << " and default value ";
 			cout << args[i]->getDefaultValue() << ", ";
 		}
 		cout << endl;
