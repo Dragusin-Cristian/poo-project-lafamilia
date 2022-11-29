@@ -99,23 +99,23 @@ private:
 	} 
 
 	void checkIfCommandsExist(string input) {
-		//TO-DO: We should destructure these into more exact cases and have more error handlings:
-		if (!(
+		//TO-DO: We should make more exact error handlings:
+		if 
+		(!(
 			input.find("CREATE TABLE ") == 0 ||
 			input.find("DROP TABLE ") == 0 ||
 			input.find("DISPLAY TABLE ") == 0 ||
-			(input.find("CREATE INDEX ") == 0 && input.find(" ON ") != string::npos) ||
+			(input.find("CREATE INDEX ") == 0 && input.find(" ON ") != string::npos && input.find("(") != string::npos && Util::nthOccurrence(input, "(", 2) == -1) ||
 			input.find("DROP INDEX ") == 0 ||
 			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos) ||
+			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos && input.find("(") == string::npos && (input.find(" WHERE ") != string::npos)) ||
 			input.find("DELETE FROM ") == 0 ||
-			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && 
+			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && (
 				(input.find("(") != string::npos && Util::nthOccurrence(input, "(", 2) == -1) // check for args
-				|| (input.find(" ALL ") && input.find("(") == string::npos)) // check for ALL
-			)) {
-			throw Exceptions(INVALID_COMMAND);
-		}
-
-		if (input.find("UPDATE ") != 0 || input.find(" SET ") == string::npos || input.find("(") != string::npos || input.find(" WHERE ") == string::npos) {
+				|| (input.find(" ALL ") && input.find("(") == string::npos) // check for ALL
+				) 
+			)
+		)) {
 			throw Exceptions(INVALID_COMMAND);
 		}
 	}
@@ -503,37 +503,43 @@ private:
 
 	// Andrei:
 	void validateDropTable() {
-		//VALIDATE IF THE COMMAND HAS EXACTLY 3 WORDS
+		tableName = rawInput.substr(LENGTH_DROP_TABLE_COMMAND);
+		cout << tableName<<endl;
 
-		// VALIDATION CHECK 1 : CRASH THE PROGRAM IF TABLE NAME HAS SPACES
-		if (this->tableName.find(' ') != string::npos)
-			throw Exceptions(INVALID_COMMAND);
-		// VALIDATION CHECK 2 : CRASH THE PROGRAM IF TABLE NAME IS MISSING
-		string s = NULL;
-		if (this->tableName == s)
-			throw Exceptions(INVALID_COMMAND);
-		// VALIDATION CHECK 3: CRASH THE PROGRAM IF WEIRD CHARACTERS(" OR ,)
-		/* string weirdCharacter = "~";
-		string weirdCharacter1 = "!";
-		string weirdCharacter2 = "@";
-		string weirdCharacter3 = "#";
-		string weirdCharacter4 = "$";
-		string weirdCharacter5 = "%";
-		string weirdCharacter6 = "^";
-		string weirdCharacter7 = "&";
-		string weirdCharacter8 = "*"; */
-		string weirdCharacter9 = "(";
-		string weirdCharacter0 = ")";
-		string weirdCharacterA = ",";
-		string weirdCharacterC = "'";
-		if (
-			this->tableName.find(weirdCharacterA) != string::npos &&
-			this->tableName.find(weirdCharacterC) != string::npos &&
-			this->tableName.find(weirdCharacter9) != string::npos &&
-			this->tableName.find(weirdCharacter0) != string::npos
-			)
-			throw Exceptions(INVALID_COMMAND);
+
+		////VALIDATE IF THE COMMAND HAS EXACTLY 3 WORDS
+
+		//// VALIDATION CHECK 1 : CRASH THE PROGRAM IF TABLE NAME HAS SPACES
+		//if (this->tableName.find(' ') != string::npos)
+		//	throw Exceptions(INVALID_COMMAND);
+		//// VALIDATION CHECK 2 : CRASH THE PROGRAM IF TABLE NAME IS MISSING
+		//string s = NULL;
+		//if (this->tableName == s)
+		//	throw Exceptions(INVALID_COMMAND);
+		//// VALIDATION CHECK 3: CRASH THE PROGRAM IF WEIRD CHARACTERS(" OR ,)
+		///* string weirdCharacter = "~";
+		//string weirdCharacter1 = "!";
+		//string weirdCharacter2 = "@";
+		//string weirdCharacter3 = "#";
+		//string weirdCharacter4 = "$";
+		//string weirdCharacter5 = "%";
+		//string weirdCharacter6 = "^";
+		//string weirdCharacter7 = "&";
+		//string weirdCharacter8 = "*"; */
+		//string weirdCharacter9 = "(";
+		//string weirdCharacter0 = ")";
+		//string weirdCharacterA = ",";
+		//string weirdCharacterC = "'";
+		//if (
+		//	this->tableName.find(weirdCharacterA) != string::npos &&
+		//	this->tableName.find(weirdCharacterC) != string::npos &&
+		//	this->tableName.find(weirdCharacter9) != string::npos &&
+		//	this->tableName.find(weirdCharacter0) != string::npos
+		//	)
+		//	throw Exceptions(INVALID_COMMAND);
 	}
+
+	// Andrei:
 	void validateDisplayTable() {
 		// VALIDATION CHECK 1 : CRASH THE PROGRAM IF TABLE NAME HAS SPACES
 		if (this->tableName.find(' ') != string::npos)
@@ -555,6 +561,8 @@ private:
 			)
 			throw Exceptions(INVALID_COMMAND);
 	}
+
+	// Andrei:
 	void validateDropIndex() {
 		// VALIDATE CHECK 1: CRASH THE PROGRAM IF INDEX_NAME IS MISSING
 		string s = NULL;
