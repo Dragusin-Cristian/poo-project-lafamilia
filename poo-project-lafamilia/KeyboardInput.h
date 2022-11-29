@@ -92,11 +92,12 @@ private:
 
 
 	void checkTableNameValidity() {
-		if (tableName == "" || tableName.find(" ") !=string::npos ) {
-			//cout << tableName << endl;
-			throw Exceptions(INVALID_TABLE_NAME);
-		}
+		Util::checkWordValidity(tableName, INVALID_TABLE_NAME);
 	} 
+
+	void checkIndexNameValidity() {
+		Util::checkWordValidity(indexName, INVALID_INDEX_NAME);
+	}
 
 	void checkIfCommandsExist(string input) {
 		//TO-DO: We should make more exact error handlings:
@@ -109,7 +110,7 @@ private:
 			input.find("DROP INDEX ") == 0 ||
 			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos) ||
 			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos && input.find("(") == string::npos && (input.find(" WHERE ") != string::npos)) ||
-			input.find("DELETE FROM ") == 0 ||
+			(input.find("DELETE FROM ") == 0 && input.find(" WHERE ") != string::npos && Util::nthOccurrence(input, "WHERE", 2) == -1 ) ||
 			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && (
 				(input.find("(") != string::npos && Util::nthOccurrence(input, "(", 2) == -1) // check for args
 				|| (input.find(" ALL ") && input.find("(") == string::npos) // check for ALL
@@ -226,10 +227,10 @@ private:
 			validateCreateTable();
 			break;
 		case DROP_TABLE:
-			validateDropTable();
+			validateDropTableOrDisplayTable();
 			break;
 		case DISPLAY_TABLE:
-			validateDisplayTable();
+			validateDropTableOrDisplayTable();
 			break;
 		case CREATE_INDEX:
 			validateCreateIndex();
@@ -502,91 +503,28 @@ private:
 	}
 
 	// Andrei:
-	void validateDropTable() {
-		tableName = rawInput.substr(LENGTH_DROP_TABLE_COMMAND);
-		cout << tableName<<endl;
+	void validateDropTableOrDisplayTable() {
+		// Get the table name (and this also checks for exactely 3 words):
+		if (commandType == DROP_TABLE) {
+			tableName = rawInput.substr(LENGTH_DROP_TABLE_COMMAND);
+		}
+		else if (commandType == DISPLAY_TABLE) {
+			tableName = rawInput.substr(LENGTH_DISPLAY_TABLE_COMMAND);
+		}
+		Util::removeWhiteSpacesBefore(&tableName, INVALID_TABLE_NAME);
+		Util::removeAllWhiteSpacesAfter(&tableName, INVALID_TABLE_NAME);
 
-
-		////VALIDATE IF THE COMMAND HAS EXACTLY 3 WORDS
-
-		//// VALIDATION CHECK 1 : CRASH THE PROGRAM IF TABLE NAME HAS SPACES
-		//if (this->tableName.find(' ') != string::npos)
-		//	throw Exceptions(INVALID_COMMAND);
-		//// VALIDATION CHECK 2 : CRASH THE PROGRAM IF TABLE NAME IS MISSING
-		//string s = NULL;
-		//if (this->tableName == s)
-		//	throw Exceptions(INVALID_COMMAND);
-		//// VALIDATION CHECK 3: CRASH THE PROGRAM IF WEIRD CHARACTERS(" OR ,)
-		///* string weirdCharacter = "~";
-		//string weirdCharacter1 = "!";
-		//string weirdCharacter2 = "@";
-		//string weirdCharacter3 = "#";
-		//string weirdCharacter4 = "$";
-		//string weirdCharacter5 = "%";
-		//string weirdCharacter6 = "^";
-		//string weirdCharacter7 = "&";
-		//string weirdCharacter8 = "*"; */
-		//string weirdCharacter9 = "(";
-		//string weirdCharacter0 = ")";
-		//string weirdCharacterA = ",";
-		//string weirdCharacterC = "'";
-		//if (
-		//	this->tableName.find(weirdCharacterA) != string::npos &&
-		//	this->tableName.find(weirdCharacterC) != string::npos &&
-		//	this->tableName.find(weirdCharacter9) != string::npos &&
-		//	this->tableName.find(weirdCharacter0) != string::npos
-		//	)
-		//	throw Exceptions(INVALID_COMMAND);
+		checkTableNameValidity();
 	}
 
-	// Andrei:
-	void validateDisplayTable() {
-		// VALIDATION CHECK 1 : CRASH THE PROGRAM IF TABLE NAME HAS SPACES
-		if (this->tableName.find(' ') != string::npos)
-			throw Exceptions(INVALID_COMMAND);
-		// VALIDATION CHECK 2 : CRASH THE PROGRAM IF TABLE NAME IS MISSING
-		string s = NULL;
-		if (this->tableName == s)
-			throw Exceptions(INVALID_COMMAND);
-		// VALIDATION CHECK 3: CRASH THE PROGRAM IF WEIRD CHARACTERS( " OR ( OR ) OR ,  )
-		string weirdCharacterA = "(";
-		string weirdCharacterB = ")";
-		string weirdCharacterC = ",";
-		string weirdCharacterD = "'";
-		if (
-			this->tableName.find(weirdCharacterA) != string::npos &&
-			this->tableName.find(weirdCharacterB) != string::npos &&
-			this->tableName.find(weirdCharacterC) != string::npos &&
-			this->tableName.find(weirdCharacterD) != string::npos
-			)
-			throw Exceptions(INVALID_COMMAND);
-	}
 
-	// Andrei:
 	void validateDropIndex() {
-		// VALIDATE CHECK 1: CRASH THE PROGRAM IF INDEX_NAME IS MISSING
-		string s = NULL;
-		if (this->indexName == s)
-			throw Exceptions(INVALID_COMMAND);
+		// Get the index name (and this also checks for exactely 3 words):
+		indexName = rawInput.substr(LENGTH_DROP_INDEX_COMMAND);
+		Util::removeWhiteSpacesBefore(&indexName, INVALID_INDEX_NAME);
+		Util::removeAllWhiteSpacesAfter(&indexName, INVALID_INDEX_NAME);
 
-		// VALIDATE CHECK 2 : CRASH THE PROGRAM IF INDEX_NAME HAS SPACES
-		if (this->indexName.find(' ') != string::npos)
-			throw Exceptions(INVALID_COMMAND);
-
-		// VALIDATE CHECK 3 : CRASH THE PROGRAM IF INDEX NAME HAS WEIRD CHARACTERS
-		string weirdCharacterA = "(";
-		string weirdCharacterB = ")";
-		string weirdCharacterC = ",";
-		string weirdCharacterD = "'";
-		if (
-			this->indexName.find(weirdCharacterA) != string::npos &&
-			this->indexName.find(weirdCharacterB) != string::npos &&
-			this->indexName.find(weirdCharacterC) != string::npos &&
-			this->indexName.find(weirdCharacterD) != string::npos
-			)
-			throw Exceptions(INVALID_COMMAND);
-
-		// VALIDATE CHECK 4: CRASH THE PROGRAM IF DROPINDEX (legat)
+		checkIndexNameValidity();
 
 	}
 

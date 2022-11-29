@@ -51,16 +51,16 @@ int main() {
 			//table.deleteFrom(...)
 			break;
 		case DROP_TABLE:
-			//table.dropTable(...)
+			table.dropTable(ki.tableName);
 			break;
 		case DISPLAY_TABLE:
-			//table.displayTable(...)
+			table.displayTable(ki.tableName);
 			break;
 		case CREATE_INDEX:
 			table.createIndex(ki.tableName, ki.indexName, ki.columnNameForCreateIndex);
 			break;
 		case DROP_INDEX:
-			// table.dropIndex(...)
+			table.dropIndex(ki.indexName);
 			break;
 		default:
 			break;
