@@ -37,10 +37,12 @@ int main() {
 			table.createTable(ki.tableName, argsArrayCreateTable, ki.argsLength);
 			break;
 		case SELECT:
-			table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName, ki.conditions->fields, ki.conditions->values, ki.conditions->conditionsLength);
+			ki.conditions // handles nullptr exception
+				? table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName, ki.conditions->fields, ki.conditions->values, ki.conditions->number)
+				: table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName);
 			break;
 		case UPDATE:
-			table.updateTable(ki.tableName, ki.updateArgs->fields, ki.updateArgs->values, ki.updateArgs->conditionsLength);
+			table.updateTable(ki.tableName, ki.updateArgs->fields, ki.updateArgs->values, ki.updateArgs->number);
 			break;
 		case INSERT_INTO:
 			//table.insertInto(...)
@@ -80,13 +82,13 @@ int main() {
 
 // PHASE 2:
 // - string checking:
-// CREATE TABLE Cats(id INT 6, name VARCHAR 30, race VARCHAR 30); X
+// CREATE TABLE Cats(id INT 6, name VARCHAR 30, race VARCHAR 30); //Cristi X
 // INSERT INTO Cats(id, name, race) VALUES (1, "Cathy", "Vagaboanda"); // Stefan
 // DROP TABLE Cats; // Andrei
 // DISPLAY TABLE Cats; // Andrei
 // DELETE FROM Cats WHERE name="Cathy"; // Stefan
-// SELECT id | ALL FROM Cats WHERE name="Cathy"; - WHERE condition is optional // Cristi
-// UPDATE Cats SET name="Amanda" // Cristi
+// SELECT id | ALL FROM Cats WHERE name="Cathy"; - WHERE condition is optional // Cristi X
+// UPDATE Cats SET name="Amanda" // Cristi X
 
 // CREATE INDEX [IF NOT EXISTS] index_name ON table_name
 // DROP INDEX index_name
