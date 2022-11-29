@@ -73,6 +73,17 @@ public:
 		return Util::rtrim(Util::ltrim(s));
 	}
 
+	static void checkWordValidity(std::string wordToCheck, Exceptions exceptionToThrow) {
+		std::string forbiddenChars = " !@#$%^&*()+={}|:\"<>?;[];',./\\";
+		if (wordToCheck == "") {
+			throw Exceptions(exceptionToThrow);
+		}
+		for (int i = 0; i < forbiddenChars.size(); i++) {
+			if (wordToCheck.find(forbiddenChars[i]) != std::string::npos) {
+				throw Exceptions(exceptionToThrow);
+			}
+		}
+	}
 };
 
 //STATIC CONST VARIABLE DEFINITIONS:

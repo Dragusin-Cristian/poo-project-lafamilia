@@ -7,6 +7,10 @@ using namespace std;
 
 class Table {
 public:
+
+	~Table() {
+		cout << "Table destructured" << endl;
+	}
 	// Cristi:
 	void createTable(string tableName, ArgumentCreateTable** args, int argsLength) {
 		// Used assert for debugging purposes:
@@ -74,9 +78,18 @@ public:
 	void deleteFrom();
 
 	// Andrei:
-	void dropTable();
-	void dropIndex();
-	void displayTable();
+	void dropTable(string tableName) {
+		assert(tableName != "", "Empty table name passed.");
+		cout << "Table " << tableName << " was dropped (deleted)." << endl;
+	}
+	void dropIndex(string indexName) {
+		assert(indexName != "", "Empty index name passed.");
+		cout << "Index " << indexName << " was dropped (deleted)." << endl;
+	}
+	void displayTable(string tableName) {
+		assert(tableName != "", "Empty table name passed.");
+		cout << "Table " << tableName << " is displayed." << endl;
+	}
 
 private:
 	string tableName;
