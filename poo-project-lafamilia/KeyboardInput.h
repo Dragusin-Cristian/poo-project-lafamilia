@@ -92,30 +92,31 @@ private:
 
 
 	void checkTableNameValidity() {
-		if (tableName == "" || tableName.find(" ") !=string::npos ) {
-			//cout << tableName << endl;
-			throw Exceptions(INVALID_TABLE_NAME);
-		}
+		Util::checkWordValidity(tableName, INVALID_TABLE_NAME);
 	} 
 
+	void checkIndexNameValidity() {
+		Util::checkWordValidity(indexName, INVALID_INDEX_NAME);
+	}
+
 	void checkIfCommandsExist(string input) {
-		//TO-DO: We should destructure these into more exact cases and have more error handlings:
-		if (!(
+		//TO-DO: We should make more exact error handlings:
+		if 
+		(!(
 			input.find("CREATE TABLE ") == 0 ||
 			input.find("DROP TABLE ") == 0 ||
 			input.find("DISPLAY TABLE ") == 0 ||
-			(input.find("CREATE INDEX ") == 0 && input.find(" ON ") != string::npos) ||
+			(input.find("CREATE INDEX ") == 0 && input.find(" ON ") != string::npos && input.find("(") != string::npos && Util::nthOccurrence(input, "(", 2) == -1) ||
 			input.find("DROP INDEX ") == 0 ||
 			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos) ||
-			input.find("DELETE FROM ") == 0 ||
-			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && 
+			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos && input.find("(") == string::npos && (input.find(" WHERE ") != string::npos)) ||
+			(input.find("DELETE FROM ") == 0 && input.find(" WHERE ") != string::npos && Util::nthOccurrence(input, "WHERE", 2) == -1 ) ||
+			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && (
 				(input.find("(") != string::npos && Util::nthOccurrence(input, "(", 2) == -1) // check for args
-				|| (input.find(" ALL ") && input.find("(") == string::npos)) // check for ALL
-			)) {
-			throw Exceptions(INVALID_COMMAND);
-		}
-
-		if (input.find("UPDATE ") != 0 || input.find(" SET ") == string::npos || input.find("(") != string::npos || input.find(" WHERE ") == string::npos) {
+				|| (input.find(" ALL ") && input.find("(") == string::npos) // check for ALL
+				) 
+			)
+		)) {
 			throw Exceptions(INVALID_COMMAND);
 		}
 	}
@@ -226,10 +227,10 @@ private:
 			validateCreateTable();
 			break;
 		case DROP_TABLE:
-			validateDropTable();
+			validateDropTableOrDisplayTable();
 			break;
 		case DISPLAY_TABLE:
-			validateDisplayTable();
+			validateDropTableOrDisplayTable();
 			break;
 		case CREATE_INDEX:
 			validateCreateIndex();
@@ -501,15 +502,30 @@ private:
 
 	}
 
-	// Adnrei:
-	void validateDropTable() {
-		// ...
+	// Andrei:
+	void validateDropTableOrDisplayTable() {
+		// Get the table name (and this also checks for exactely 3 words):
+		if (commandType == DROP_TABLE) {
+			tableName = rawInput.substr(LENGTH_DROP_TABLE_COMMAND);
+		}
+		else if (commandType == DISPLAY_TABLE) {
+			tableName = rawInput.substr(LENGTH_DISPLAY_TABLE_COMMAND);
+		}
+		Util::removeWhiteSpacesBefore(&tableName, INVALID_TABLE_NAME);
+		Util::removeAllWhiteSpacesAfter(&tableName, INVALID_TABLE_NAME);
+
+		checkTableNameValidity();
 	}
-	void validateDisplayTable() {
-		// ...
-	}
+
+
 	void validateDropIndex() {
-		// ...
+		// Get the index name (and this also checks for exactely 3 words):
+		indexName = rawInput.substr(LENGTH_DROP_INDEX_COMMAND);
+		Util::removeWhiteSpacesBefore(&indexName, INVALID_INDEX_NAME);
+		Util::removeAllWhiteSpacesAfter(&indexName, INVALID_INDEX_NAME);
+
+		checkIndexNameValidity();
+
 	}
 
 	// should return ["id, integer, 1000, 0", "nume, text, 128, ''", "grupa, text, 50, '1000'"]
