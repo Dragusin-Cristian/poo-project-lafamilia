@@ -25,9 +25,9 @@ public:
 		return pos;
 	}
 
-	static void removeWhiteSpacesBefore(std::string* str) {
+	static void removeWhiteSpacesBefore(std::string* str, ExceptionType excType) {
 		if (*str == "") {
-			throw Exceptions(INVALID_TABLE_NAME);
+			throw Exceptions(excType);
 		}
 		// remove all white spaces before the actual str content
 		while ((*str)[0] == ' ') {
@@ -35,9 +35,9 @@ public:
 		}
 	}
 
-	static void removeAllWhiteSpacesAfter(std::string* str) {
+	static void removeAllWhiteSpacesAfter(std::string* str, ExceptionType excType) {
 		if (*str == "") {
-			throw Exceptions(INVALID_TABLE_NAME);
+			throw Exceptions(excType);
 		}
 		// remove all white spaces after the actual str content
 		while ((*str)[(*str).size() - 1] == ' ') {
@@ -73,6 +73,17 @@ public:
 		return Util::rtrim(Util::ltrim(s));
 	}
 
+	static void checkWordValidity(std::string wordToCheck, Exceptions exceptionToThrow) {
+		std::string forbiddenChars = " !@#$%^&*()+={}|:\"<>?;[];',./\\";
+		if (wordToCheck == "") {
+			throw Exceptions(exceptionToThrow);
+		}
+		for (int i = 0; i < forbiddenChars.size(); i++) {
+			if (wordToCheck.find(forbiddenChars[i]) != std::string::npos) {
+				throw Exceptions(exceptionToThrow);
+			}
+		}
+	}
 };
 
 //STATIC CONST VARIABLE DEFINITIONS:
