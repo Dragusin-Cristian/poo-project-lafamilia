@@ -14,16 +14,65 @@ void deleteFI(FileInputs* fi) {
 }
 
 
+void workForCommands(string commandString, FileInputs fi, Table table) {
+	fi.initializeFi(commandString);
+
+	ArgumentCreateTable** argsArrayCreateTable = new ArgumentCreateTable * [fi.argsLength];
+
+	if (fi.commandType == CREATE_TABLE) {
+		for (int i = 0; i < fi.argsLength; i++) {
+			argsArrayCreateTable[i] = new ArgumentCreateTable(fi.argsStringArray[i]);
+		}
+	}
+
+
+	// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
+
+	switch (fi.commandType)
+	{
+	case CREATE_TABLE:
+		table.createTable(fi.tableName, argsArrayCreateTable, fi.argsLength);
+		break;
+	case SELECT:
+		fi.conditions // handles nullptr exception
+			? table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName, fi.conditions->fields, fi.conditions->values, fi.conditions->number)
+			: table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName);
+		break;
+	case UPDATE:
+		table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number);
+		break;
+	case INSERT_INTO:
+		//table.insertInto(...)
+		break;
+	case DELETE_FROM:
+		//table.deleteFrom(...)
+		break;
+	case DROP_TABLE:
+		table.dropTable(fi.tableName);
+		break;
+	case DISPLAY_TABLE:
+		table.displayTable(fi.tableName);
+		break;
+	case CREATE_INDEX:
+		table.createIndex(fi.tableName, fi.indexName, fi.columnNameForCreateIndex);
+		break;
+	case DROP_INDEX:
+		table.dropIndex(fi.indexName);
+		break;
+	default:
+		break;
+	}
+
+	fi.~FileInputs();
+	table.~Table();
+}
+
 
 int main() {
-
-	// TO BE DELETED
-	string test = "";
 
 	ConsoleInput ci;
 
 	FileInputs fi;
-	ArgumentCreateTable** argsArrayCreateTable;
 	Table table;
 
 	try
@@ -33,71 +82,25 @@ int main() {
 		}
 
 		for (int i = 0; i < ci.getNrOfFiles(); i++) {
+			string commandString = "";
 			ifstream f(ci.getInputFileName(i));
-
 			if (f) {
 				while (f) {
 					string temp="";
 					f >> temp;
-					test += temp + " ";
+					commandString += temp + " ";
 				}
+
+				workForCommands(commandString, fi, table);
 			}
 			else {
 				throw Exceptions(FILE_DOES_NOT_EXIST);
 				break;
 			}
-
-			test += "\n";
-		}
-		cout << test;
-
-		fi.initializeFi();
-
-		argsArrayCreateTable = new ArgumentCreateTable * [fi.argsLength];
-
-		if (fi.commandType == CREATE_TABLE) {
-			for (int i = 0; i < fi.argsLength; i++) {
-				argsArrayCreateTable[i] = new ArgumentCreateTable(fi.argsStringArray[i]);
-			}
+			cout << commandString << endl;
 		}
 
-
-		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
-
-		switch (fi.commandType)
-		{
-		case CREATE_TABLE:
-			table.createTable(fi.tableName, argsArrayCreateTable, fi.argsLength);
-			break;
-		case SELECT:
-			fi.conditions // handles nullptr exception
-				? table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName, fi.conditions->fields, fi.conditions->values, fi.conditions->number)
-				: table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName);
-			break;
-		case UPDATE:
-			table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number);
-			break;
-		case INSERT_INTO:
-			//table.insertInto(...)
-			break;
-		case DELETE_FROM:
-			//table.deleteFrom(...)
-			break;
-		case DROP_TABLE:
-			table.dropTable(fi.tableName);
-			break;
-		case DISPLAY_TABLE:
-			table.displayTable(fi.tableName);
-			break;
-		case CREATE_INDEX:
-			table.createIndex(fi.tableName, fi.indexName, fi.columnNameForCreateIndex);
-			break;
-		case DROP_INDEX:
-			table.dropIndex(fi.indexName);
-			break;
-		default:
-			break;
-		}
+		
 
 		return 0;
 	}
@@ -111,7 +114,6 @@ int main() {
 		cout << e.handleError();
 		main();
 	}
-
 }
 
 // PHASE 2:

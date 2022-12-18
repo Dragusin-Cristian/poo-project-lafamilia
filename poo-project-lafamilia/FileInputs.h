@@ -46,9 +46,9 @@ public:
 		argsLength = 0;
 	}
 
-	void initializeFi() {
+	void initializeFi(string input) {
 		// get the user input and store it in rawInput, and trim it:
-		readInput();
+		readInput(input);
 
 		// first validation:
 		checkIfCommandsExist(rawInput);
@@ -610,8 +610,9 @@ private:
 		return args;
 	}
 
-	void readInput() {
-		getline(cin, this->rawInput);
+	void readInput(string input) {
+		//getline(cin, this->rawInput); // used when we were reading the rawInput from the console input
+		rawInput = input;
 		this->rawInput = Util::trim(this->rawInput);
 	}
 
