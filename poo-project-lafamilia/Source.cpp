@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "FileInputs.h";
 #include "ArgumentCreateTable.h";
 #include "Exceptions.h";
@@ -6,15 +7,20 @@
 #include "ConsoleInput.h"
 using namespace std;
 
+// WHERE WE NEED THIS?
 void deleteFI(FileInputs* fi) {
 	delete fi;
 	fi = nullptr;
 }
 
+
+
 int main() {
 
+	// TO BE DELETED
+	string test = "";
+
 	ConsoleInput ci;
-	cout << endl << ci.getNrOfFiles() << endl;
 
 	FileInputs fi;
 	ArgumentCreateTable** argsArrayCreateTable;
@@ -22,6 +28,29 @@ int main() {
 
 	try
 	{
+		if (ci.getNrOfFiles() == 0) {
+			throw Exceptions(NO_FILES_PASSED);
+		}
+
+		for (int i = 0; i < ci.getNrOfFiles(); i++) {
+			ifstream f(ci.getInputFileName(i));
+
+			if (f) {
+				while (f) {
+					string temp="";
+					f >> temp;
+					test += temp + " ";
+				}
+			}
+			else {
+				throw Exceptions(FILE_DOES_NOT_EXIST);
+				break;
+			}
+
+			test += "\n";
+		}
+		cout << test;
+
 		fi.initializeFi();
 
 		argsArrayCreateTable = new ArgumentCreateTable * [fi.argsLength];
@@ -75,6 +104,7 @@ int main() {
 	catch (Exceptions e)
 	{
 		// deinatialize alocated and useless memory:
+		ci.~ConsoleInput();
 		fi.~FileInputs();
 		table.~Table();
 
