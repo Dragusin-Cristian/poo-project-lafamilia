@@ -1,48 +1,52 @@
 #include <iostream>
-#include "KeyboardInput.h";
+#include "FileInputs.h";
 #include "ArgumentCreateTable.h";
 #include "Exceptions.h";
 #include "Table.h";
+#include "ConsoleInput.h"
 using namespace std;
 
-void deleteKI(KeyboardInput* ki) {
-	delete ki;
-	ki = nullptr;
+void deleteFI(FileInputs* fi) {
+	delete fi;
+	fi = nullptr;
 }
 
 int main() {
 
-	KeyboardInput ki;
+	ConsoleInput ci;
+	cout << endl << ci.getNrOfFiles() << endl;
+
+	FileInputs fi;
 	ArgumentCreateTable** argsArrayCreateTable;
 	Table table;
 
 	try
 	{
-		ki.initializeKi();
+		fi.initializeFi();
 
-		 argsArrayCreateTable = new ArgumentCreateTable * [ki.argsLength];
+		argsArrayCreateTable = new ArgumentCreateTable * [fi.argsLength];
 
-		if (ki.commandType == CREATE_TABLE) {
-			for (int i = 0; i < ki.argsLength; i++) {
-				argsArrayCreateTable[i] = new ArgumentCreateTable(ki.argsStringArray[i]);
+		if (fi.commandType == CREATE_TABLE) {
+			for (int i = 0; i < fi.argsLength; i++) {
+				argsArrayCreateTable[i] = new ArgumentCreateTable(fi.argsStringArray[i]);
 			}
 		}
 
 
 		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
 
-		switch (ki.commandType)
+		switch (fi.commandType)
 		{
 		case CREATE_TABLE:
-			table.createTable(ki.tableName, argsArrayCreateTable, ki.argsLength);
+			table.createTable(fi.tableName, argsArrayCreateTable, fi.argsLength);
 			break;
 		case SELECT:
-			ki.conditions // handles nullptr exception
-				? table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName, ki.conditions->fields, ki.conditions->values, ki.conditions->number)
-				: table.selectFromTable(ki.argsStringArray, ki.argsLength, ki.tableName);
+			fi.conditions // handles nullptr exception
+				? table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName, fi.conditions->fields, fi.conditions->values, fi.conditions->number)
+				: table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName);
 			break;
 		case UPDATE:
-			table.updateTable(ki.tableName, ki.updateArgs->fields, ki.updateArgs->values, ki.updateArgs->number);
+			table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number);
 			break;
 		case INSERT_INTO:
 			//table.insertInto(...)
@@ -51,16 +55,16 @@ int main() {
 			//table.deleteFrom(...)
 			break;
 		case DROP_TABLE:
-			table.dropTable(ki.tableName);
+			table.dropTable(fi.tableName);
 			break;
 		case DISPLAY_TABLE:
-			table.displayTable(ki.tableName);
+			table.displayTable(fi.tableName);
 			break;
 		case CREATE_INDEX:
-			table.createIndex(ki.tableName, ki.indexName, ki.columnNameForCreateIndex);
+			table.createIndex(fi.tableName, fi.indexName, fi.columnNameForCreateIndex);
 			break;
 		case DROP_INDEX:
-			table.dropIndex(ki.indexName);
+			table.dropIndex(fi.indexName);
 			break;
 		default:
 			break;
@@ -71,7 +75,7 @@ int main() {
 	catch (Exceptions e)
 	{
 		// deinatialize alocated and useless memory:
-		ki.~KeyboardInput();
+		fi.~FileInputs();
 		table.~Table();
 
 		cout << e.handleError();
