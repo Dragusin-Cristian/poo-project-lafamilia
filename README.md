@@ -5,6 +5,8 @@
 ## Use this to test your program:
 projectPOO.exe ./Files/CreateTableCommand.txt ./Files/SelectFromTableCommand.txt
 
+(Feel free to create your own files with commands and test multiple combinations!)
+
 (we need to pass the names of the files through main parameters, and not have the condition for the command to contain projectPOO.exe)
 
 ## Followed these criteria when build the commands validation:
