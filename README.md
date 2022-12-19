@@ -3,7 +3,9 @@
 -- still in development --
 
 ## Use this to test your program:
-projectPOO.exe ./Files/CreateTableCommand.txt ./Files/SelectFromTableCommand.txt
+* projectPOO.exe ./Files/CreateTableCommand.txt ./Files/SelectFromTableCommand.txt
+
+* projectPOO.exe ./Files/MixedCommands.txt
 
 (Feel free to create your own files with commands and test multiple combinations!)
 

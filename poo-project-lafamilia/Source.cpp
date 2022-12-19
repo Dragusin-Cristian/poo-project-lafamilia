@@ -89,9 +89,23 @@ int main() {
 					string temp="";
 					f >> temp;
 					commandString += temp + " ";
+
+					if (temp.find(';') != string::npos) { // last word contains ; means is the end of the command
+						Util::removeAllWhiteSpacesAfter(&commandString, INVALID_COMMAND); // remove last space added before
+						commandString.pop_back(); // remove the ; from the end of the command
+						cout << endl << endl << "|" <<commandString << "|" << endl << endl; // FOR DEVELOPMENT PURPOSE ONLY
+						workForCommands(commandString, fi, table);
+
+						commandString = "";
+					}
 				}
 
-				workForCommands(commandString, fi, table);
+				// For checking when we have extra white spaces at the end of the file (maybe the user fell asleep on the space bar):
+				commandString = Util::trim(commandString);
+				if (commandString != "") { // if last command doesn't have ; at the end (becasue if it has, is processed before)
+					workForCommands(commandString, fi, table);
+				}
+				
 			}
 			else {
 				throw Exceptions(FILE_DOES_NOT_EXIST);
