@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "FileInputs.h";
 #include "ArgumentCreateTable.h";
 #include "Exceptions.h";
@@ -6,82 +7,127 @@
 #include "ConsoleInput.h"
 using namespace std;
 
+// WHERE WE NEED THIS?
 void deleteFI(FileInputs* fi) {
 	delete fi;
 	fi = nullptr;
 }
 
+
+void workForCommands(string commandString, FileInputs fi, Table table) {
+	fi.initializeFi(commandString);
+
+	ArgumentCreateTable** argsArrayCreateTable = new ArgumentCreateTable * [fi.argsLength];
+
+	if (fi.commandType == CREATE_TABLE) {
+		for (int i = 0; i < fi.argsLength; i++) {
+			argsArrayCreateTable[i] = new ArgumentCreateTable(fi.argsStringArray[i]);
+		}
+	}
+
+
+	// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
+
+	switch (fi.commandType)
+	{
+	case CREATE_TABLE:
+		table.createTable(fi.tableName, argsArrayCreateTable, fi.argsLength);
+		break;
+	case SELECT:
+		fi.conditions // handles nullptr exception
+			? table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName, fi.conditions->fields, fi.conditions->values, fi.conditions->number)
+			: table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName);
+		break;
+	case UPDATE:
+		table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number);
+		break;
+	case INSERT_INTO:
+		//table.insertInto(...)
+		break;
+	case DELETE_FROM:
+		//table.deleteFrom(...)
+		break;
+	case DROP_TABLE:
+		table.dropTable(fi.tableName);
+		break;
+	case DISPLAY_TABLE:
+		table.displayTable(fi.tableName);
+		break;
+	case CREATE_INDEX:
+		table.createIndex(fi.tableName, fi.indexName, fi.columnNameForCreateIndex);
+		break;
+	case DROP_INDEX:
+		table.dropIndex(fi.indexName);
+		break;
+	default:
+		break;
+	}
+
+	fi.~FileInputs();
+	table.~Table();
+}
+
+
 int main() {
 
 	ConsoleInput ci;
-	cout << endl << ci.getNrOfFiles() << endl;
 
 	FileInputs fi;
-	ArgumentCreateTable** argsArrayCreateTable;
 	Table table;
 
 	try
 	{
-		fi.initializeFi();
+		if (ci.getNrOfFiles() == 0) {
+			throw Exceptions(NO_FILES_PASSED);
+		}
 
-		argsArrayCreateTable = new ArgumentCreateTable * [fi.argsLength];
+		for (int i = 0; i < ci.getNrOfFiles(); i++) {
+			string commandString = "";
+			ifstream f(ci.getInputFileName(i));
+			if (f) {
+				while (f) {
+					string temp="";
+					f >> temp;
+					commandString += temp + " ";
 
-		if (fi.commandType == CREATE_TABLE) {
-			for (int i = 0; i < fi.argsLength; i++) {
-				argsArrayCreateTable[i] = new ArgumentCreateTable(fi.argsStringArray[i]);
+					if (temp.find(';') != string::npos) { // last word contains ; means is the end of the command
+						Util::removeAllWhiteSpacesAfter(&commandString, INVALID_COMMAND); // remove last space added before
+						commandString.pop_back(); // remove the ; from the end of the command
+						cout << endl << endl << "|" <<commandString << "|" << endl << endl; // FOR DEVELOPMENT PURPOSE ONLY
+						workForCommands(commandString, fi, table);
+
+						commandString = "";
+					}
+				}
+
+				// For checking when we have extra white spaces at the end of the file (maybe the user fell asleep on the space bar):
+				commandString = Util::trim(commandString);
+				if (commandString != "") { // if last command doesn't have ; at the end (becasue if it has, is processed before)
+					workForCommands(commandString, fi, table);
+				}
+				
 			}
+			else {
+				throw Exceptions(FILE_DOES_NOT_EXIST);
+				break;
+			}
+			cout << commandString << endl;
 		}
 
-
-		// ALL THE ACTIONS THAT REQUIRE VALID DATA MUST BE CALLED IN THE END, HERE (BECAUSE OF THE ERROR HANDLING): 
-
-		switch (fi.commandType)
-		{
-		case CREATE_TABLE:
-			table.createTable(fi.tableName, argsArrayCreateTable, fi.argsLength);
-			break;
-		case SELECT:
-			fi.conditions // handles nullptr exception
-				? table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName, fi.conditions->fields, fi.conditions->values, fi.conditions->number)
-				: table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName);
-			break;
-		case UPDATE:
-			table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number);
-			break;
-		case INSERT_INTO:
-			//table.insertInto(...)
-			break;
-		case DELETE_FROM:
-			//table.deleteFrom(...)
-			break;
-		case DROP_TABLE:
-			table.dropTable(fi.tableName);
-			break;
-		case DISPLAY_TABLE:
-			table.displayTable(fi.tableName);
-			break;
-		case CREATE_INDEX:
-			table.createIndex(fi.tableName, fi.indexName, fi.columnNameForCreateIndex);
-			break;
-		case DROP_INDEX:
-			table.dropIndex(fi.indexName);
-			break;
-		default:
-			break;
-		}
+		
 
 		return 0;
 	}
 	catch (Exceptions e)
 	{
 		// deinatialize alocated and useless memory:
+		ci.~ConsoleInput();
 		fi.~FileInputs();
 		table.~Table();
 
 		cout << e.handleError();
 		main();
 	}
-
 }
 
 // PHASE 2:

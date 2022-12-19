@@ -15,7 +15,9 @@ enum ExceptionType {
 	INVALID_INDEX_NAME,
 	INVALID_COLUMN_NAME,
 	INVALID_QUTES,
-	EMPTY_CONDITION_OR_ARGUMENT
+	EMPTY_CONDITION_OR_ARGUMENT,
+	NO_FILES_PASSED,
+	FILE_DOES_NOT_EXIST
 };
 
 class Exceptions : public std::exception {
@@ -55,6 +57,10 @@ public:
 			return "Invalid column name. Please type again:\n";
 		case EMPTY_CONDITION_OR_ARGUMENT:
 			return "Empty condition or argument. Please type again.\n";
+		case NO_FILES_PASSED:
+			return "You forgot pass at least 1 file.\n";
+		case FILE_DOES_NOT_EXIST:
+			return "One of the passed files doesn't exist.\n";
 		default:
 			break;
 		}
