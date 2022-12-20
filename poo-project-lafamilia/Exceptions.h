@@ -17,7 +17,11 @@ enum ExceptionType {
 	INVALID_QUTES,
 	EMPTY_CONDITION_OR_ARGUMENT,
 	NO_FILES_PASSED,
-	FILE_DOES_NOT_EXIST
+	FILE_DOES_NOT_EXIST,
+	ERROR_CREATING_TABLES_FOLDER,
+	TABLE_DOES_NOT_EXIST,
+	TABLE_ALREADY_EXISTS,
+	ERROR_IN_CREATING_THE_TABLE
 };
 
 class Exceptions : public std::exception {
@@ -61,6 +65,14 @@ public:
 			return "You forgot pass at least 1 file.\n";
 		case FILE_DOES_NOT_EXIST:
 			return "One of the passed files doesn't exist.\n";
+		case ERROR_CREATING_TABLES_FOLDER:
+			return "Error in creating the Tables folder.\n";
+		case TABLE_DOES_NOT_EXIST:
+			return "Table doesn't exist.\n";
+		case TABLE_ALREADY_EXISTS:
+			return "A table named like this already exists.\n";
+		case ERROR_IN_CREATING_THE_TABLE:
+			return "Could not create the table.\n";
 		default:
 			break;
 		}

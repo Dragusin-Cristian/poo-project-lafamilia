@@ -106,6 +106,7 @@ int main() {
 					workForCommands(commandString, fi, table);
 				}
 				
+				f.close();
 			}
 			else {
 				throw Exceptions(FILE_DOES_NOT_EXIST);

@@ -1,0 +1,1 @@
+SELECT (nume) FROM test WHERE id = 1
