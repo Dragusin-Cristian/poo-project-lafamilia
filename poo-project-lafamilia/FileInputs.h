@@ -11,7 +11,7 @@ enum CommandType { CREATE_TABLE, DROP_TABLE, DISPLAY_TABLE, CREATE_INDEX, DROP_I
 #pragma once
 // Cristi:
 // Handle a command from keyboard input. Ex: CREATE TABLE Stud(id INTEGER 64 1, name TEXT 128 'George')
-class KeyboardInput {
+class FileInputs {
 public:
 	//for each of these static const variables we add 1 in order to take into account the space after the command too (ex: "CREATE TABLE " and not "CREATE TABLE")
 	static const int LENGTH_CREATE_TABLE_COMMAND;
@@ -41,14 +41,14 @@ public:
 	string columnNameForCreateIndex;
 
 
-	KeyboardInput() {
+	FileInputs() {
 		hasCondition = false;
 		argsLength = 0;
 	}
 
-	void initializeKi() {
+	void initializeFi(string input) {
 		// get the user input and store it in rawInput, and trim it:
-		readInput();
+		readInput(input);
 
 		// first validation:
 		checkIfCommandsExist(rawInput);
@@ -69,7 +69,7 @@ public:
 		checkForbiddenWords();
 	}
 
-	~KeyboardInput() {
+	~FileInputs() {
 		if (argsStringArray != nullptr) {
 			argsStringArray->~string();
 			argsStringArray = nullptr;
@@ -82,7 +82,7 @@ public:
 			updateArgs->~StringStructureToArray();
 			updateArgs = nullptr;
 		}
-		cout << "Destructor called for KI "<< allWordsBeforeFirstParanthesis << endl;
+		cout << "Destructor called for FI "<< allWordsBeforeFirstParanthesis << endl;
 	}
 
 
@@ -159,8 +159,8 @@ private:
 	}
 
 	void workCheckForbiddenWords(string word) {
-		for (int i = 0; i < KeyboardInput::LENGTH_FORBIDDEN_WORDS; i++) {
-			if (word == KeyboardInput::forbiddenWords[i]) {
+		for (int i = 0; i < FileInputs::LENGTH_FORBIDDEN_WORDS; i++) {
+			if (word == FileInputs::forbiddenWords[i]) {
 				throw Exceptions(FORBIDDEN_WORDS_USED);
 			}
 		}
@@ -257,7 +257,7 @@ private:
 
 	// Cristi:
 	void validateCreateTable() {
-		this->tableName = allWordsBeforeFirstParanthesis.erase(0, KeyboardInput::LENGTH_CREATE_TABLE_COMMAND - 1);
+		this->tableName = allWordsBeforeFirstParanthesis.erase(0, FileInputs::LENGTH_CREATE_TABLE_COMMAND - 1);
 		Util::removeWhiteSpacesBefore(&tableName, INVALID_TABLE_NAME);
 		Util::removeAllWhiteSpacesAfter(&tableName, INVALID_TABLE_NAME);
 		checkTableNameValidity();
@@ -418,13 +418,13 @@ private:
 		if (this->rawInput[this->rawInput.size() - 1] != ')')
 			throw Exceptions(INVALID_COMMAND);
 
-		int index_firstSpaceAfterTableName = KeyboardInput::LENGTH_INSERT_INTO_COMMAND;
+		int index_firstSpaceAfterTableName = FileInputs::LENGTH_INSERT_INTO_COMMAND;
 		while (this->rawInput[index_firstSpaceAfterTableName] != ' ')
 			index_firstSpaceAfterTableName++;
 
 		this->tableName = this->rawInput.substr(
-			KeyboardInput::LENGTH_INSERT_INTO_COMMAND, 
-			index_firstSpaceAfterTableName - KeyboardInput::LENGTH_INSERT_INTO_COMMAND);
+			FileInputs::LENGTH_INSERT_INTO_COMMAND, 
+			index_firstSpaceAfterTableName - FileInputs::LENGTH_INSERT_INTO_COMMAND);
 
 
 		//VALIDATION CHECK 2: CRASH THE PROGRAM IF TABLE NAME HAS SPACES
@@ -433,10 +433,10 @@ private:
 		checkTableNameValidity();
 
 
-		string substrWhereVALUESisSupposedToBe = this->rawInput.substr(KeyboardInput::LENGTH_INSERT_INTO_COMMAND 
+		string substrWhereVALUESisSupposedToBe = this->rawInput.substr(FileInputs::LENGTH_INSERT_INTO_COMMAND 
 			+ this->tableName.size()  
 			+ 1, 
-			KeyboardInput::LENGTH_VALUES_KEYWORD);
+			FileInputs::LENGTH_VALUES_KEYWORD);
 
 		//VALIDATION CHECK 3: CRASH THE PROGRAM IF YOU DON'T SEE " VALUES " AFTER THE FIRST PARANTHESIS
 		if (substrWhereVALUESisSupposedToBe != "VALUES")
@@ -445,7 +445,7 @@ private:
 
 		string argsValuesString;
 
-		int indexFirstOpenParanthesis = KeyboardInput::LENGTH_INSERT_INTO_COMMAND + this->tableName.size() + 1 + KeyboardInput::LENGTH_VALUES_KEYWORD;
+		int indexFirstOpenParanthesis = FileInputs::LENGTH_INSERT_INTO_COMMAND + this->tableName.size() + 1 + FileInputs::LENGTH_VALUES_KEYWORD;
 		while (this->rawInput[indexFirstOpenParanthesis] == ' ')
 			indexFirstOpenParanthesis++;
 
@@ -472,29 +472,29 @@ private:
 	}
 
 	void validateDeleteFrom() {
-		int indexFirstSpaceAfterTableName = KeyboardInput::LENGTH_DELETE_FROM_COMMAND;
+		int indexFirstSpaceAfterTableName = FileInputs::LENGTH_DELETE_FROM_COMMAND;
 		while (this->rawInput[indexFirstSpaceAfterTableName] != ' ')
 			indexFirstSpaceAfterTableName++;
 
 		this->tableName = this->rawInput.substr(
-			KeyboardInput::LENGTH_DELETE_FROM_COMMAND, 
-			indexFirstSpaceAfterTableName - KeyboardInput::LENGTH_DELETE_FROM_COMMAND);
+			FileInputs::LENGTH_DELETE_FROM_COMMAND, 
+			indexFirstSpaceAfterTableName - FileInputs::LENGTH_DELETE_FROM_COMMAND);
 
 		//VALIDATION CHECK 1: CRASH THE PROGRAM IF TABLE NAME HAS SPACES
 		Util::removeWhiteSpacesBefore(&tableName, INVALID_TABLE_NAME);
 		Util::removeAllWhiteSpacesAfter(&tableName, INVALID_TABLE_NAME);
 		checkTableNameValidity();
 
-		int indexAfterTableName = KeyboardInput::LENGTH_DELETE_FROM_COMMAND + this->tableName.size();
+		int indexAfterTableName = FileInputs::LENGTH_DELETE_FROM_COMMAND + this->tableName.size();
 
 		//VALIDATION CHECK 2: CRASH THE PROGRAM IF "WHERE" IS WRITTEN INCORRECTLY
 		if (indexAfterTableName != this->rawInput.size() &&
-			this->rawInput.substr(indexAfterTableName, KeyboardInput::LENGTH_WHERE_CONDITION + 1) != " WHERE ") {
+			this->rawInput.substr(indexAfterTableName, FileInputs::LENGTH_WHERE_CONDITION + 1) != " WHERE ") {
 
 			throw Exceptions(INVALID_COMMAND);
 		}
 
-		int indexAfterWhere = indexAfterTableName + KeyboardInput::LENGTH_WHERE_CONDITION;
+		int indexAfterWhere = indexAfterTableName + FileInputs::LENGTH_WHERE_CONDITION;
 		//cout << "index after where is " << indexAfterWhere << ".";
 
 		StringStructureToArray condition(this->rawInput.substr(indexAfterWhere, this->rawInput.size()-1));
@@ -610,8 +610,9 @@ private:
 		return args;
 	}
 
-	void readInput() {
-		getline(cin, this->rawInput);
+	void readInput(string input) {
+		//getline(cin, this->rawInput); // used when we were reading the rawInput from the console input
+		rawInput = input;
 		this->rawInput = Util::trim(this->rawInput);
 	}
 
@@ -644,18 +645,18 @@ private:
 };
 
 //for each of these static const variables we add 1 in order to take into account the space after the command too (ex: "CREATE TABLE " and not "CREATE TABLE")
-const int KeyboardInput::LENGTH_CREATE_TABLE_COMMAND = 13;
-const int KeyboardInput::LENGTH_DROP_TABLE_COMMAND = 11;
-const int KeyboardInput::LENGTH_DISPLAY_TABLE_COMMAND = 14;
-const int KeyboardInput::LENGTH_CREATE_INDEX_COMMAND = 13;
-const int KeyboardInput::LENGTH_DROP_INDEX_COMMAND = 11;
-const int KeyboardInput::LENGTH_INSERT_INTO_COMMAND = 12;
-const int KeyboardInput::LENGTH_DELETE_FROM_COMMAND = 12;
-const int KeyboardInput::LENGTH_SELECT_COMMAND = 7;
-const int KeyboardInput::LENGTH_UPDATE_COMMAND = 7;
-const int KeyboardInput::LENGTH_WHERE_CONDITION = 6;
-const int KeyboardInput::LENGTH_SET_COMMAND = 5; // Also count the space before SET
-const int KeyboardInput::LENGTH_ON_COMMAND = 4; // Also count the space before SET
-const int KeyboardInput::LENGTH_FORBIDDEN_WORDS = 13;
-const int KeyboardInput::LENGTH_VALUES_KEYWORD = 6; //without spaces around it
-const string* KeyboardInput::forbiddenWords = new string[26]{"CREATE", "create", "TABLE", "table", "UPDATE", "update", "INDEX", "index", "SELECT", "select", "INSERT", "insert", "INTO", "into", "DROP", "drop", "DISPLAY", "display", "DELETE", "delete", "FROM", "from", "WHERE", "where", "SET", "set"};
+const int FileInputs::LENGTH_CREATE_TABLE_COMMAND = 13;
+const int FileInputs::LENGTH_DROP_TABLE_COMMAND = 11;
+const int FileInputs::LENGTH_DISPLAY_TABLE_COMMAND = 14;
+const int FileInputs::LENGTH_CREATE_INDEX_COMMAND = 13;
+const int FileInputs::LENGTH_DROP_INDEX_COMMAND = 11;
+const int FileInputs::LENGTH_INSERT_INTO_COMMAND = 12;
+const int FileInputs::LENGTH_DELETE_FROM_COMMAND = 12;
+const int FileInputs::LENGTH_SELECT_COMMAND = 7;
+const int FileInputs::LENGTH_UPDATE_COMMAND = 7;
+const int FileInputs::LENGTH_WHERE_CONDITION = 6;
+const int FileInputs::LENGTH_SET_COMMAND = 5; // Also count the space before SET
+const int FileInputs::LENGTH_ON_COMMAND = 4; // Also count the space before SET
+const int FileInputs::LENGTH_FORBIDDEN_WORDS = 13;
+const int FileInputs::LENGTH_VALUES_KEYWORD = 6; //without spaces around it
+const string* FileInputs::forbiddenWords = new string[26]{"CREATE", "create", "TABLE", "table", "UPDATE", "update", "INDEX", "index", "SELECT", "select", "INSERT", "insert", "INTO", "into", "DROP", "drop", "DISPLAY", "display", "DELETE", "delete", "FROM", "from", "WHERE", "where", "SET", "set"};
