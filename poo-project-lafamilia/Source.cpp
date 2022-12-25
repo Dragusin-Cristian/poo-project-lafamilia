@@ -93,7 +93,6 @@ int main() {
 					if (temp.find(';') != string::npos) { // last word contains ; means is the end of the command
 						Util::removeAllWhiteSpacesAfter(&commandString, INVALID_COMMAND); // remove last space added before
 						commandString.pop_back(); // remove the ; from the end of the command
-						cout << endl << endl << "|" <<commandString << "|" << endl << endl; // FOR DEVELOPMENT PURPOSE ONLY
 						workForCommands(commandString, fi, table);
 
 						commandString = "";
@@ -106,6 +105,7 @@ int main() {
 					workForCommands(commandString, fi, table);
 				}
 				
+				f.close();
 			}
 			else {
 				throw Exceptions(FILE_DOES_NOT_EXIST);
