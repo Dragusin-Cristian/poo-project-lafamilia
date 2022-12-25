@@ -13,6 +13,8 @@ using namespace std;
 
 enum binFileModes { COUNT_LARGEST_VALUES, DISPLAY_VALUES };
 const int DISPLAY_SPACE_BUFFER = 5;
+const string LINE = "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+
 
 
 class Table {
@@ -30,12 +32,12 @@ private:
 			sizeSize = "%" + to_string(*largestSize) + "s";
 			defValSize = "%" + to_string(*largestDefVal) + "s";
 
-			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal + 4, "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal + 4, LINE.c_str());
 			printf(nameSize.c_str(), "NAME"); printf("%s", "|");
 			printf(typeSize.c_str(), "TYPE"); printf("%s", "|");
 			printf(sizeSize.c_str(), "SIZE"); printf("%s", "|");
 			printf(defValSize.c_str(), "DEFAULT VALUE"); printf("%s\n", "|");
-			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal + 4, "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal + 4, LINE.c_str());
 		
 			g.clear();
 			g.seekg(0);
@@ -102,7 +104,7 @@ private:
 		}
 
 		if (mode == DISPLAY_VALUES) {
-			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal+4, "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal+4, LINE.c_str());
 		}
 
 	}
