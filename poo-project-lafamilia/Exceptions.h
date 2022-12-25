@@ -21,7 +21,8 @@ enum ExceptionType {
 	ERROR_CREATING_TABLES_FOLDER,
 	TABLE_DOES_NOT_EXIST,
 	TABLE_ALREADY_EXISTS,
-	ERROR_IN_CREATING_THE_TABLE
+	ERROR_IN_CREATING_THE_TABLE,
+	FILE_DELETION_FAILED
 };
 
 class Exceptions : public std::exception {
@@ -73,6 +74,8 @@ public:
 			return "A table named like this already exists.\n";
 		case ERROR_IN_CREATING_THE_TABLE:
 			return "Could not create the table.\n";
+		case FILE_DELETION_FAILED:
+			return "Could not delete this table.\n";
 		default:
 			break;
 		}

@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <stdio.h>
 #include <fstream>
 #include <sys/stat.h> // for folder handling
 #include <direct.h> // for folder handling
@@ -19,6 +20,10 @@ const string LINE = "-----------------------------------------------------------
 
 class Table {
 private:
+	string getTableAddress(string tableName) {
+		return "Tables/" + tableName + ".bin";
+	}
+
 	void workForDisplayTable(ifstream& g, binFileModes mode, int* largestName, int* largestType, int* largestSize, int* largestDefVal) {
 		string nameSize;
 		string typeSize;
@@ -129,7 +134,7 @@ public:
 		assert(argsLength != 0 && args != nullptr, "Null arguments reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
-		string fileName = "Tables/" + tableName + ".bin";
+		string fileName = getTableAddress(tableName);
 
 		// check if the table already exists:
 		struct stat sb;
@@ -189,7 +194,7 @@ public:
 
 
 	void displayTable(string tableName) {
-		ifstream g("Tables/" + tableName + ".bin", ios::binary);
+		ifstream g(getTableAddress(tableName), ios::binary);
 
 		if (g) {
 			int largestName = 20;
@@ -209,12 +214,12 @@ public:
 	}
 
 
-	// Cristi:
+	// Cristi: WIP:
 	void selectFromTable(string* selectFields, int selectFieldsLength, string tableName, string* conditionFileds=nullptr, string* conditionValues=nullptr, int conditionsLength=NULL) {
 		assert(selectFields != nullptr && selectFieldsLength > 0, "Null fields reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
-		ifstream f("Tables/" + tableName + ".bin", ios::binary);
+		ifstream f(getTableAddress(tableName), ios::binary);
 
 		if (f) {
 			string temp;
@@ -288,11 +293,17 @@ public:
 	void insertInto();
 	void deleteFrom();
 
-	// Andrei:
+	// Cristi:
 	void dropTable(string tableName) {
 		assert(tableName != "", "Empty table name passed.");
-		cout << "Table " << tableName << " was dropped (deleted)." << endl;
+
+		int status = remove(this->getTableAddress(tableName).c_str());
+		if (status == 0)
+			cout << "\nTable deleted successfully!";
+		else
+			throw Exceptions(FILE_DELETION_FAILED);
 	}
+
 	void dropIndex(string indexName) {
 		assert(indexName != "", "Empty index name passed.");
 		cout << "Index " << indexName << " was dropped (deleted)." << endl;
