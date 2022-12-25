@@ -10,14 +10,102 @@
 #include "Exceptions.h"
 using namespace std;
 
-struct Row {
-	string name;
-	string type;
-	string size;
-	string defautlValue;
-};
+
+enum binFileModes { COUNT_LARGEST_VALUES, DISPLAY_VALUES };
+const int DISPLAY_SPACE_BUFFER = 5;
+
 
 class Table {
+private:
+	void workForDisplayTable(ifstream& g, binFileModes mode, int* largestName, int* largestType, int* largestSize, int* largestDefVal) {
+		string nameSize;
+		string typeSize;
+		string sizeSize;
+		string defValSize;
+
+		
+		if (mode == DISPLAY_VALUES) {
+			nameSize = "%" + to_string(*largestName) + "s";
+			typeSize = "%" + to_string(*largestType) + "s";
+			sizeSize = "%" + to_string(*largestSize) + "s";
+			defValSize = "%" + to_string(*largestDefVal) + "s";
+
+			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal + 4, "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			printf(nameSize.c_str(), "NAME"); printf("%s", "|");
+			printf(typeSize.c_str(), "TYPE"); printf("%s", "|");
+			printf(sizeSize.c_str(), "SIZE"); printf("%s", "|");
+			printf(defValSize.c_str(), "DEFAULT VALUE"); printf("%s\n", "|");
+			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal + 4, "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+		
+			g.clear();
+			g.seekg(0);
+		}
+
+		while (!g.eof()) {
+			string columnName;
+			string columnType;
+			string columnSize;
+			string columnDefValue;
+
+			short dimName;
+			short dimType;
+			short dimSize;
+			short dimDefValue;
+
+
+			if (!g.read((char*)&dimName, sizeof(dimName))) break;
+
+			char* n = new char[dimName + 1];
+			g.read(n, dimName + 1);
+			columnName = n;
+			delete[] n;
+
+
+			g.read((char*)&dimType, sizeof(dimType));
+
+			char* t = new char[dimType + 1];
+			g.read(t, dimType + 1);
+			columnType = t;
+			delete[] t;
+
+
+			g.read((char*)&dimSize, sizeof(dimSize));
+
+			char* s = new char[dimSize + 1];
+			g.read(s, dimSize + 1);
+			columnSize = s;
+			delete[] s;
+
+
+			g.read((char*)&dimDefValue, sizeof(dimDefValue));
+
+			char* d = new char[dimDefValue + 1];
+			g.read(d, dimDefValue + 1);
+			columnDefValue = d;
+			delete[] d;
+
+			//cout << dimName << " " << columnName << " " << dimType << " " << columnType << " " << dimSize << " " << columnSize << " " << dimDefValue << " " << columnDefValue << endl; //FOR DEV MODE ONLY
+
+			if (mode == COUNT_LARGEST_VALUES) {
+				((dimName + DISPLAY_SPACE_BUFFER) > *largestName) && (*largestName = (dimName + DISPLAY_SPACE_BUFFER));
+				((dimType + DISPLAY_SPACE_BUFFER) > *largestType) && (*largestType = (dimType + DISPLAY_SPACE_BUFFER));
+				((dimSize + DISPLAY_SPACE_BUFFER) > *largestSize) && (*largestSize = (dimSize + DISPLAY_SPACE_BUFFER));
+				((dimDefValue + DISPLAY_SPACE_BUFFER) > *largestDefVal) && (*largestDefVal = (dimDefValue + DISPLAY_SPACE_BUFFER));
+			}
+
+			if (mode == DISPLAY_VALUES) {
+				printf(nameSize.c_str(), columnName.c_str()); printf("%s", "|");
+				printf(typeSize.c_str(), columnType.c_str()); printf("%s", "|");
+				printf(sizeSize.c_str(), columnSize.c_str()); printf("%s", "|");
+				printf(defValSize.c_str(), columnDefValue.c_str()); printf("%s\n", "|");
+			}
+		}
+
+		if (mode == DISPLAY_VALUES) {
+			printf("%.*s\n", *largestName + *largestType + *largestSize + *largestDefVal+4, "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+		}
+
+	}
 public:
 
 	Table() {
@@ -44,25 +132,21 @@ public:
 		// check if the table already exists:
 		struct stat sb;
 		if (stat(fileName.c_str(), &sb) == 0 && !(sb.st_mode & S_IFDIR)) { // if already exists
-			//throw Exceptions(TABLE_ALREADY_EXISTS); // UNCOMMENT THIS AFTER YOU FINISH THIS METHOD!!!!!!!!
+			throw Exceptions(TABLE_ALREADY_EXISTS); // UNCOMMENT THIS AFTER YOU FINISH THIS METHOD!!!!!!!!
 		} 
-
 
 		ofstream f(fileName, ios::binary);
 		if (f) {
-			cout << "FROM CREATE TABLE METHOD:" << endl;
-
-			string columnName;
-			string columnType;
-			string columnSize;
-			string columnDefValue;
-
-			short dimName;
-			short dimType;
-			short dimSize;
-			short dimDefValue;
-
 			for (int i = 0; i < argsLength; i++) {
+				string columnName;
+				string columnType;
+				string columnSize;
+				string columnDefValue;
+
+				short dimName;
+				short dimType;
+				short dimSize;
+				short dimDefValue;
 
 				columnName = args[i]->getColumnName();
 				columnType = args[i]->getType();
@@ -86,86 +170,34 @@ public:
 				f.write((char*)&dimDefValue, sizeof(dimDefValue));
 				f.write(columnDefValue.c_str(), dimDefValue + 1);
 
-				f.close();
-
-				cout << dimName << " " << columnName << " " << dimType << " " << columnType << " " << dimSize << " " << columnSize << " " << dimDefValue << " " << columnDefValue << endl;;
-
 			}
-
-			this->displayTable(tableName);
+			f.close();
+			if (f.good()) {
+				cout << endl << "Table " << tableName << " created successfully" << endl<<endl;
+			}
+			else {
+				throw Exceptions(ERROR_IN_CREATING_THE_TABLE);
+			}
 		}
 		else {
 			f.close();
 			throw Exceptions(ERROR_IN_CREATING_THE_TABLE);
 		}
-
-
-		//// do something in phase 2:
-		//cout << "Table " << tableName << " created with the args ";
-		//for (int i = 0; i < argsLength; i++) {
-		//	cout << args[i]->getColumnName() << " of type ";
-		//	cout << args[i]->getType() << " having an allocated size of ";
-		//	cout << args[i]->getSize() << " and default value ";
-		//	cout << args[i]->getDefaultValue() << ", ";
-		//}
-		//cout << endl;
 	}
 
-	// WE SHOULD REFACTOR THIS TO DISPLAY A REAL TABLE:
+
 	void displayTable(string tableName) {
 		ifstream g("Tables/" + tableName + ".bin", ios::binary);
 
-
-
 		if (g) {
-			cout << "FROM DISPLAY METHOD:" << endl;
-			string columnName;
-			string columnType;
-			string columnSize;
-			string columnDefValue;
+			int largestName = 20;
+			int largestType= 20;
+			int largestSize = 20;
+			int largestDefValue = 20;
 
-			short dimName;
-			short dimType;
-			short dimSize;
-			short dimDefValue;
-			for (int i = 0; i < 3; i++) {
-
-				
-				g.read((char*)&dimName, sizeof(dimName));
-
-				char* n = new char[dimName + 1];
-				g.read(n, dimName + 1);
-				columnName = n;
-				delete[] n;
-
-				
-				g.read((char*)&dimType, sizeof(dimType));
-
-				char* t = new char[dimType + 1];
-				g.read(t, dimType + 1);
-				columnType = t;
-				delete[] t;
-
-				
-				g.read((char*)&dimSize, sizeof(dimSize));
-
-				char* s = new char[dimSize + 1];
-				g.read(s, dimSize + 1);
-				columnSize = s;
-				delete[] s;
-
-				
-				g.read((char*)&dimDefValue, sizeof(dimDefValue));
-
-				char* d = new char[dimDefValue + 1];
-				g.read(d, dimDefValue + 1);
-				columnDefValue = d;
-				delete[] d;
-
-				cout << dimName << " " << columnName << " " << dimType << " " << columnType << " " << dimSize << " " << columnSize << " " << dimDefValue << " " << columnDefValue << endl;;
-
-			}
-
+			this->workForDisplayTable(g, COUNT_LARGEST_VALUES, &largestName, &largestType, &largestSize, &largestDefValue);
+			this->workForDisplayTable(g, DISPLAY_VALUES, &largestName, &largestType, &largestSize, &largestDefValue);
+			
 			g.close();
 		}
 		else {
