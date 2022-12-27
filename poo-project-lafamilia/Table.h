@@ -12,24 +12,39 @@
 using namespace std;
 
 
-enum binFileModes { COUNT_LARGEST_VALUES, DISPLAY_VALUES };
+enum createAndDisplayTableTypes { COUNT_LARGEST_VALUES, DISPLAY_VALUES };
 const int DISPLAY_SPACE_BUFFER = 5;
 const string LINE = "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+enum isDataOrStructure {IS_DATA, IS_STRUCTURE};
+enum insertIntoTypes {COUNT_COLUMNS, GET_STRUCTURE};
 
+struct Column {
+	string columnName;
+	string columnType;
+	string columnSize;
+	string columnDefValue;
+
+	short dimName;
+	short dimType;
+	short dimSize;
+	short dimDefValue;
+};
 
 
 class Table {
 private:
-	string getTableAddress(string tableName) {
-		return "Tables/" + tableName + ".bin";
+	string getTableAddress(string tableName, isDataOrStructure type) {
+		if (type == IS_STRUCTURE) {
+			return "Tables/" + tableName + ".structure.bin";
+		}
+		return "Tables/" + tableName + ".data.bin";
 	}
 
-	void workForDisplayTable(ifstream& g, binFileModes mode, int* largestName, int* largestType, int* largestSize, int* largestDefVal) {
+	void workForDisplayTable(ifstream& g, createAndDisplayTableTypes mode, int* largestName, int* largestType, int* largestSize, int* largestDefVal) {
 		string nameSize;
 		string typeSize;
 		string sizeSize;
 		string defValSize;
-
 		
 		if (mode == DISPLAY_VALUES) {
 			nameSize = "%" + to_string(*largestName) + "s";
@@ -113,6 +128,107 @@ private:
 		}
 
 	}
+
+	void workForIsertInto(ifstream& g, int* columnsCounter, insertIntoTypes mode, Column* columns = nullptr) {
+		int i = 0;
+		while (!g.eof()) {
+			short dimName;
+
+			if (!g.read((char*)&dimName, sizeof(dimName))) break;
+
+			if (mode == COUNT_COLUMNS) {
+				// this is just for iterating over the bin file:
+				char* trash = new char[std::numeric_limits<char>::max()];
+				g.read(trash, dimName + 1);
+				g.read((char*)&dimName, sizeof(dimName));
+				g.read(trash, dimName + 1);
+				g.read((char*)&dimName, sizeof(dimName));
+				g.read(trash, dimName + 1);
+				g.read((char*)&dimName, sizeof(dimName));
+				g.read(trash, dimName + 1);
+				delete[] trash;
+
+				// what we are interested in, is the count of the columns:
+				(*columnsCounter)++;
+			}
+			else if (mode == GET_STRUCTURE) {
+				string columnName;
+				string columnType;
+				string columnSize;
+				string columnDefValue;
+
+				short dimType;
+				short dimSize;
+				short dimDefValue;
+
+				char* n = new char[dimName + 1];
+				g.read(n, dimName + 1);
+				columnName = n;
+				delete[] n;
+
+
+				g.read((char*)&dimType, sizeof(dimType));
+
+				char* t = new char[dimType + 1];
+				g.read(t, dimType + 1);
+				columnType = t;
+				delete[] t;
+
+
+				g.read((char*)&dimSize, sizeof(dimSize));
+
+				char* s = new char[dimSize + 1];
+				g.read(s, dimSize + 1);
+				columnSize = s;
+				delete[] s;
+
+
+				g.read((char*)&dimDefValue, sizeof(dimDefValue));
+
+				char* d = new char[dimDefValue + 1];
+				g.read(d, dimDefValue + 1);
+				columnDefValue = d;
+				delete[] d;
+
+				columns[i].dimName = dimName;
+				columns[i].dimType = dimType;
+				columns[i].dimSize = dimSize;
+				columns[i].dimDefValue = dimDefValue;
+
+				columns[i].columnName = columnName;
+				columns[i].columnType = columnType;
+				columns[i].columnSize = columnSize;
+				columns[i].columnDefValue = columnDefValue;
+				i++;
+
+			}
+		}
+	}
+
+	void checkValueValidity(string value, string type, string size) {
+		if (type == "INTEGER" || type == "integer") {
+			// if type is number, then that argument must be made of digits only,
+			for (size_t i = 0; i < value.size(); ++i)
+				if (!std::isdigit(value[i]))
+					throw Exceptions(INVALID_ARGUMENT_INSERT_INTO);
+
+			// then, check if the value is not bigger then the max. size:
+			if (stoi(value) > stoi(size)) {
+				throw Exceptions(INVALID_ARGUMENT_INSERT_INTO);
+			}
+		}
+		else if (type == "TEXT" || type == "text") {
+			// if it's a text, then it should be surounded by ''
+			if (value[0] != '\'' || value[value.size() - 1] != '\'') {
+				throw Exceptions(INVALID_ARGUMENT_INSERT_INTO);
+			}
+
+			// then, check if the length of the string (without the 2 ') is <= size
+			if (value.size() - 2 > stoi(size)) {
+				throw Exceptions(INVALID_ARGUMENT_INSERT_INTO);
+			}
+		}
+	}
 public:
 
 	Table() {
@@ -134,7 +250,7 @@ public:
 		assert(argsLength != 0 && args != nullptr, "Null arguments reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
-		string fileName = getTableAddress(tableName);
+		string fileName = getTableAddress(tableName, IS_STRUCTURE);
 
 		// check if the table already exists:
 		struct stat sb;
@@ -145,6 +261,7 @@ public:
 		ofstream f(fileName, ios::binary);
 		if (f) {
 			for (int i = 0; i < argsLength; i++) {
+				// TO-DO: add validation for the default value to respect the type and size!!!
 				string columnName;
 				string columnType;
 				string columnSize;
@@ -194,7 +311,7 @@ public:
 
 
 	void displayTable(string tableName) {
-		ifstream g(getTableAddress(tableName), ios::binary);
+		ifstream g(getTableAddress(tableName, IS_STRUCTURE), ios::binary);
 
 		if (g) {
 			int largestName = 20;
@@ -219,7 +336,7 @@ public:
 		assert(selectFields != nullptr && selectFieldsLength > 0, "Null fields reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
-		ifstream f(getTableAddress(tableName), ios::binary);
+		ifstream f(getTableAddress(tableName, IS_DATA), ios::binary);
 
 		if (f) {
 			string temp;
@@ -289,15 +406,80 @@ public:
 		cout << "Index " << indexName << " created on table " << tableName << " on " << columnName << " column." << endl;
 	}
 
-	// Stefan:
-	void insertInto();
+
+	// Cristi:
+	void insertInto(string* argsArray, int argsLength, string tableName) {
+		assert(argsArray != nullptr, "Args array cannot be nullptr.");
+		assert(argsLength > 0, "Args array length must be higher then 0.");
+		assert(tableName.size() > 0, "Cannot have empty table name");
+
+		ifstream g(this->getTableAddress(tableName, IS_STRUCTURE)); 
+		// check if the table was created first:
+		if (g.fail()) {
+			throw Exceptions(TABLE_DOES_NOT_EXIST);
+		}
+
+		// get the structure of the table
+		Column* columns;
+
+		// First, we need to count the columns:
+		int columnsCounter = 0;
+		this->workForIsertInto(g, &columnsCounter, COUNT_COLUMNS);
+		g.close();
+
+		cout << endl << columnsCounter << endl;
+		
+
+		// Second, we need to store the columns names, types, and sizes:
+		ifstream t(this->getTableAddress(tableName, IS_STRUCTURE));
+		columns = new Column[columnsCounter];
+		this->workForIsertInto(t, &columnsCounter, GET_STRUCTURE, columns);
+		t.close();
+
+		// validate the values (number of fields, corresponding types)
+		if (argsLength != columnsCounter) {
+			throw Exceptions(INVALID_NUMBER_OF_ARGUMENTS_FOR_INSERT_INTO);
+		}
+		for (int i = 0; i < columnsCounter; i++) {
+			this->checkValueValidity(argsArray[i], columns[i].columnType, columns[i].columnSize);
+		}
+
+		// Finally, insert the values in append mode:
+		ofstream f(this->getTableAddress(tableName, IS_DATA), ios_base::app);
+
+		if (f) {
+			for (int i = 0; i < argsLength; i++) {
+				string value;
+				short dim;
+
+				value = argsArray[i];
+				dim = value.size();
+
+				f.write((char*)&dim, sizeof(dim));
+				f.write(value.c_str(), dim + 1);
+
+			}
+			f.close();
+			if (f.good()) {
+				cout << endl << "Values inserted successfully in table " << tableName << "!" << endl << endl;
+			}
+			else {
+				throw Exceptions(ERROR_IN_INSERTING_INTO);
+			}
+		}
+		else {
+			f.close();
+			throw Exceptions(ERROR_IN_INSERTING_INTO);
+		}
+
+	}
 	void deleteFrom();
 
 	// Cristi:
 	void dropTable(string tableName) {
 		assert(tableName != "", "Empty table name passed.");
 
-		int status = remove(this->getTableAddress(tableName).c_str());
+		int status = remove(this->getTableAddress(tableName, IS_STRUCTURE).c_str());
 		if (status == 0)
 			cout << "\nTable deleted successfully!";
 		else

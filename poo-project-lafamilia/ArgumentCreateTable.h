@@ -102,6 +102,15 @@ private:
 			throw Exceptions(INVALID_ARGUMENT_TYPE); 
 		}
 
+		//Validation for the size argument (should be only digits, a number greater then 0):
+		for (size_t i = 0; i < size.size(); ++i) {
+			if (!std::isdigit(size[i]))
+				throw Exceptions(INVALID_SIZE);
+		}
+		if (stoi(size) <= 0) {
+			throw Exceptions(INVALID_SIZE);
+		}
+
 		//Check validity of default value
 		if (type == "INTEGER") {
 			for (size_t i = 0; i < defaultValue.size(); ++i)

@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-class Row {
+class Column {
 public:
 
 	string name;
@@ -11,12 +11,12 @@ public:
 	string size;
 	string defautlValue;
 
-	Row(string name, string type, string size, string defautlValue) {
+	Column(string name, string type, string size, string defautlValue) {
 		this->type = type;
 		this->size = size;
 		this->defautlValue = defautlValue;
 		this->name = name;
 	}
 
-	Row() {}
+	Column() {}
 };

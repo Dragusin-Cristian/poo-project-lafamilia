@@ -461,12 +461,11 @@ private:
 
 		argsValuesString = this->rawInput.substr(indexFirstOpenParanthesis + 1, indexFirstClosedParanthesis - indexFirstOpenParanthesis - 1); //+1 and -1 in order to not have paranthesis taken into account as well
 
-		int noOfArguments = 0;
-		string* argsValues = this->splitInsertIntoArguments(argsValuesString, noOfArguments);
+		this->argsStringArray = this->splitInsertIntoArguments(argsValuesString, this->argsLength);
 
 		//VALIDATION CHECK 5: ARGUMENTS CAN NOT HAVE SPACE INSIDE THEM
-		for (int i = 0; i < noOfArguments; ++i) {
-			if (argsValues[i].find(' ') != string::npos)
+		for (int i = 0; i < this->argsLength; ++i) {
+			if (this->argsStringArray[i].find(' ') != string::npos)
 				throw Exceptions(INVALID_ARGUMENT);
 		}
 	}

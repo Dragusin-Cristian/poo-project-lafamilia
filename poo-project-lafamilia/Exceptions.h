@@ -6,6 +6,7 @@ enum ExceptionType {
 	INVALID_ARGUMENT, 
 	INVALID_ARGUMENT_TYPE,
 	INVALID_DEFAULT_VALUE,
+	INVALID_SIZE,
 	PARANTHESIS_MISMATCH,
 	NO_FIELDS_SELECTED,
 	INVALID_COMMAS,
@@ -22,7 +23,10 @@ enum ExceptionType {
 	TABLE_DOES_NOT_EXIST,
 	TABLE_ALREADY_EXISTS,
 	ERROR_IN_CREATING_THE_TABLE,
-	FILE_DELETION_FAILED
+	FILE_DELETION_FAILED,
+	INVALID_NUMBER_OF_ARGUMENTS_FOR_INSERT_INTO,
+	INVALID_ARGUMENT_INSERT_INTO,
+	ERROR_IN_INSERTING_INTO
 };
 
 class Exceptions : public std::exception {
@@ -42,6 +46,8 @@ public:
 			return "The argument you entered has an invalid type. Please type again:\n";
 		case INVALID_DEFAULT_VALUE:
 			return "The argument you entered has an invalid default value. Please type again:\n";
+		case INVALID_SIZE:
+			return "The size is invalid.\n";
 		case NO_FIELDS_SELECTED:
 			return "No fields selected. Please type again:\n";
 		case INVALID_COMMAS:
@@ -76,6 +82,12 @@ public:
 			return "Could not create the table.\n";
 		case FILE_DELETION_FAILED:
 			return "Could not delete this table.\n";
+		case INVALID_NUMBER_OF_ARGUMENTS_FOR_INSERT_INTO:
+			return "Invalid number of arguments passed. Check structure of the table.\n";
+		case INVALID_ARGUMENT_INSERT_INTO:
+			return "You entered an invalid argument. Please type again:\n";
+		case ERROR_IN_INSERTING_INTO:
+			return "An error occured while inserting the values into this table.\n";
 		default:
 			break;
 		}

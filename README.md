@@ -18,6 +18,8 @@ Notes:
 
 * projectPOO.exe ./CommandsFiles/DropTableCommand.txt
 
+* projectPOO.exe ./CommandsFiles/InsertIntoCommand.txt
+
 (Feel free to create your own files with commands and test multiple combinations!)
 
 (we need to pass the names of the files through main parameters, and not have the condition for the command to contain projectPOO.exe)

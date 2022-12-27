@@ -8,7 +8,4 @@ id                                                |name                         
 
 // WHAT WE STORE: (in binary)
 
-id | name | grupa // we need this as header
-0 | '' | '1000' | 
-1 | 'Dragusin Cristian' | '1000' | 
-2 | 'Randa Abbas' | '1004' | 
+102''6'1000'1119'Dragusin Cristian'6'1000'1213'Randa Abbas'6'1004'
