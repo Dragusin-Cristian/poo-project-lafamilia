@@ -461,12 +461,11 @@ private:
 
 		argsValuesString = this->rawInput.substr(indexFirstOpenParanthesis + 1, indexFirstClosedParanthesis - indexFirstOpenParanthesis - 1); //+1 and -1 in order to not have paranthesis taken into account as well
 
-		int noOfArguments = 0;
-		string* argsValues = this->splitInsertIntoArguments(argsValuesString, noOfArguments);
+		this->argsStringArray = this->splitInsertIntoArguments(argsValuesString, this->argsLength);
 
 		//VALIDATION CHECK 5: ARGUMENTS CAN NOT HAVE SPACE INSIDE THEM
-		for (int i = 0; i < noOfArguments; ++i) {
-			if (argsValues[i].find(' ') != string::npos)
+		for (int i = 0; i < this->argsLength; ++i) {
+			if (this->argsStringArray[i].find(' ') != string::npos)
 				throw Exceptions(INVALID_ARGUMENT);
 		}
 	}
@@ -659,4 +658,6 @@ const int FileInputs::LENGTH_SET_COMMAND = 5; // Also count the space before SET
 const int FileInputs::LENGTH_ON_COMMAND = 4; // Also count the space before SET
 const int FileInputs::LENGTH_FORBIDDEN_WORDS = 13;
 const int FileInputs::LENGTH_VALUES_KEYWORD = 6; //without spaces around it
+
+// TO-DO: Handle word "ALL" & "all": should be forbidden as fields name for table creation, and allowed as argument for SELECT command
 const string* FileInputs::forbiddenWords = new string[26]{"CREATE", "create", "TABLE", "table", "UPDATE", "update", "INDEX", "index", "SELECT", "select", "INSERT", "insert", "INTO", "into", "DROP", "drop", "DISPLAY", "display", "DELETE", "delete", "FROM", "from", "WHERE", "where", "SET", "set"};

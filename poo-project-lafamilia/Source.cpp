@@ -42,7 +42,7 @@ void workForCommands(string commandString, FileInputs fi, Table table) {
 		table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number);
 		break;
 	case INSERT_INTO:
-		//table.insertInto(...)
+		table.insertInto(fi.argsStringArray, fi.argsLength, fi.tableName);
 		break;
 	case DELETE_FROM:
 		//table.deleteFrom(...)

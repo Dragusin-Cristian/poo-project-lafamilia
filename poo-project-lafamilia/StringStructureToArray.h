@@ -91,8 +91,9 @@ private:
 			if (field == "" || value == "" || value == "\"\"")
 				throw Exceptions(INVALID_FIELD);
 
-			if (field.find(" ") != string::npos)
-				throw Exceptions(INVALID_FIELD);
+			// WHY DID WE HAVE THIS?
+			//if (field.find(" ") != string::npos)
+			//	throw Exceptions(INVALID_FIELD);
 
 			fields[i] = field;
 			values[i] = value;

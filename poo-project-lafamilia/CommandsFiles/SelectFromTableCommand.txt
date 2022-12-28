@@ -1,1 +1,1 @@
-SELECT (nume) FROM test WHERE id = 1
+SELECT (nume, grupa, id) FROM test WHERE grupa = '1002'

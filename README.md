@@ -8,15 +8,22 @@ Notes:
 
 
 ## Use this to test your program:
-* projectPOO.exe ./CommandsFiles/CreateTableCommand.txt ./CommandsFiles/SelectFromTableCommand.txt
+### This script will reset your database (delete table, create and populate) - GREAT FOR DEVELOPMENT:
+* projectPOO.exe ./CommandsFiles/DropTableCommand.txt ./CommandsFiles/CreateTableCommand.txt ./CommandsFiles/populateTable.txt ./CommandsFiles/SelectAllFromTableCommand.txt
+
+* projectPOO.exe ./CommandsFiles/populateTable.txt
 
 * projectPOO.exe ./CommandsFiles/SelectFromTableCommand.txt
+
+* projectPOO.exe ./CommandsFiles/SelectAllFromTableCommand.txt
 
 * projectPOO.exe ./CommandsFiles/MixedCommands.txt
 
 * projectPOO.exe ./CommandsFiles/DisplayTableCommand.txt
 
 * projectPOO.exe ./CommandsFiles/DropTableCommand.txt
+
+* projectPOO.exe ./CommandsFiles/InsertIntoCommand.txt
 
 (Feel free to create your own files with commands and test multiple combinations!)
 
