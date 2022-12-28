@@ -26,7 +26,8 @@ enum ExceptionType {
 	FILE_DELETION_FAILED,
 	INVALID_NUMBER_OF_ARGUMENTS_FOR_INSERT_INTO,
 	INVALID_ARGUMENT_INSERT_INTO,
-	ERROR_IN_INSERTING_INTO
+	ERROR_IN_INSERTING_INTO,
+	TABLE_IS_EMPTY
 };
 
 class Exceptions : public std::exception {
@@ -81,13 +82,15 @@ public:
 		case ERROR_IN_CREATING_THE_TABLE:
 			return "Could not create the table.\n";
 		case FILE_DELETION_FAILED:
-			return "Could not delete this table.\n";
+			return "Could not delete this table, check if it exists first.\n";
 		case INVALID_NUMBER_OF_ARGUMENTS_FOR_INSERT_INTO:
 			return "Invalid number of arguments passed. Check structure of the table.\n";
 		case INVALID_ARGUMENT_INSERT_INTO:
 			return "You entered an invalid argument. Please type again:\n";
 		case ERROR_IN_INSERTING_INTO:
 			return "An error occured while inserting the values into this table.\n";
+		case TABLE_IS_EMPTY:
+			return "Table doesn't exist or it's empty.\n";
 		default:
 			break;
 		}
