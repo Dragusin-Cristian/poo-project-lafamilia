@@ -506,10 +506,12 @@ public:
 				
 				// We reorder the selectFields as in the columns structure:
 				string* temp = new string[selectFieldsLength];
+				int a = 0;
 				for (int i = 0; i < columnsCounter; i++) {
 					for (int j = 0; j < selectFieldsLength; j++) {
 						if (columns[i].columnName == selectFields[j]) {
-							temp[i] = selectFields[j];
+							temp[a] = selectFields[j];
+							a++;
 						}
 					}
 				}
@@ -672,8 +674,6 @@ public:
 		}
 
 		cout << endl;
-
-			
 	}
 
 		
