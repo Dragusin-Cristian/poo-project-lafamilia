@@ -39,13 +39,13 @@ void workForCommands(string commandString, FileInputs fi, Table table) {
 			: table.selectFromTable(fi.argsStringArray, fi.argsLength, fi.tableName);
 		break;
 	case UPDATE:
-		table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number);
+		table.updateTable(fi.tableName, fi.updateArgs->fields, fi.updateArgs->values, fi.updateArgs->number, fi.conditions->fields, fi.conditions->values, fi.conditions->number);
 		break;
 	case INSERT_INTO:
 		table.insertInto(fi.argsStringArray, fi.argsLength, fi.tableName);
 		break;
 	case DELETE_FROM:
-		//table.deleteFrom(...)
+		table.deleteFrom(fi.tableName, fi.conditions->fields, fi.conditions->values, fi.conditions->number);
 		break;
 	case DROP_TABLE:
 		table.dropTable(fi.tableName);
