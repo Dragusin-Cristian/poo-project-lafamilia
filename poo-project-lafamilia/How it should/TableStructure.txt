@@ -1,0 +1,17 @@
+// WHAT WE DISPLAY: (for example, display table command)
+
+NAME                |TYPE                |SIZE                |DEFAULT VALUE                                      |
+-------------------------------------------------------------------------------------------------------------------
+id                  |integer             |1000                |0                                                  | 
+name                |text                |128                 |''                                                 | 
+grupa               |text                |50                  |'1000'                                             | 
+
+
+// WHAT WE STORE: (in binary)
+
+// we don't need the header here 
+2id7integer3100104name4text31282''5grupa4text2506'1000' 
+
+
+-- NOTES:
+(name must be one word noly // maybe in the future will use '' to suround multi word field names)

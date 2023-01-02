@@ -1,0 +1,11 @@
+// WHAT WE DISPLAY: (for example, select all command)
+
+id                                                |name                                              |grupa                                             |
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+0                                                 |''                                                |'1000'                                            |
+1                                                 |'Dragusin Cristian'                               |'1000'                                            |
+2                                                 |'Randa Abbas'                                     |'1004'                                            |
+
+// WHAT WE STORE: (in binary)
+
+102''6'1000'1119'Dragusin Cristian'6'1000'1213'Randa Abbas'6'1004'

@@ -6,6 +6,7 @@ enum ExceptionType {
 	INVALID_ARGUMENT, 
 	INVALID_ARGUMENT_TYPE,
 	INVALID_DEFAULT_VALUE,
+	INVALID_SIZE,
 	PARANTHESIS_MISMATCH,
 	NO_FIELDS_SELECTED,
 	INVALID_COMMAS,
@@ -17,7 +18,16 @@ enum ExceptionType {
 	INVALID_QUTES,
 	EMPTY_CONDITION_OR_ARGUMENT,
 	NO_FILES_PASSED,
-	FILE_DOES_NOT_EXIST
+	FILE_DOES_NOT_EXIST,
+	ERROR_CREATING_TABLES_FOLDER,
+	TABLE_DOES_NOT_EXIST,
+	TABLE_ALREADY_EXISTS,
+	ERROR_IN_CREATING_THE_TABLE,
+	FILE_DELETION_FAILED,
+	INVALID_NUMBER_OF_ARGUMENTS_FOR_INSERT_INTO,
+	INVALID_ARGUMENT_INSERT_INTO,
+	ERROR_IN_INSERTING_INTO,
+	TABLE_IS_EMPTY
 };
 
 class Exceptions : public std::exception {
@@ -37,6 +47,8 @@ public:
 			return "The argument you entered has an invalid type. Please type again:\n";
 		case INVALID_DEFAULT_VALUE:
 			return "The argument you entered has an invalid default value. Please type again:\n";
+		case INVALID_SIZE:
+			return "The size is invalid.\n";
 		case NO_FIELDS_SELECTED:
 			return "No fields selected. Please type again:\n";
 		case INVALID_COMMAS:
@@ -61,6 +73,24 @@ public:
 			return "You forgot pass at least 1 file.\n";
 		case FILE_DOES_NOT_EXIST:
 			return "One of the passed files doesn't exist.\n";
+		case ERROR_CREATING_TABLES_FOLDER:
+			return "Error in creating the Tables folder.\n";
+		case TABLE_DOES_NOT_EXIST:
+			return "Table doesn't exist.\n";
+		case TABLE_ALREADY_EXISTS:
+			return "A table named like this already exists.\n";
+		case ERROR_IN_CREATING_THE_TABLE:
+			return "Could not create the table.\n";
+		case FILE_DELETION_FAILED:
+			return "Could not delete this table, check if it exists first.\n";
+		case INVALID_NUMBER_OF_ARGUMENTS_FOR_INSERT_INTO:
+			return "Invalid number of arguments passed. Check structure of the table.\n";
+		case INVALID_ARGUMENT_INSERT_INTO:
+			return "You entered an invalid argument. Please type again:\n";
+		case ERROR_IN_INSERTING_INTO:
+			return "An error occured while inserting the values into this table.\n";
+		case TABLE_IS_EMPTY:
+			return "Table doesn't exist or it's empty.\n";
 		default:
 			break;
 		}
