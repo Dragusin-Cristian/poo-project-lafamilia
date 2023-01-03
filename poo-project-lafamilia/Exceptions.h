@@ -14,6 +14,7 @@ enum ExceptionType {
 	INVALID_FIELD,
 	INVALID_TABLE_NAME,
 	INVALID_INDEX_NAME,
+	INDEX_ALREADY_EXISTS,
 	INVALID_COLUMN_NAME,
 	INVALID_QUTES,
 	EMPTY_CONDITION_OR_ARGUMENT,
@@ -65,6 +66,8 @@ public:
 			return "Invalid table name. Please type again:\n";
 		case INVALID_INDEX_NAME:
 			return "Invalid index name. Please type again:\n";
+		case INDEX_ALREADY_EXISTS:
+			return "Index was already created. Please type again:\n";
 		case INVALID_COLUMN_NAME:
 			return "Invalid column name. Please type again:\n";
 		case EMPTY_CONDITION_OR_ARGUMENT:

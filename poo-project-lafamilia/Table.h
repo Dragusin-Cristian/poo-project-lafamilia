@@ -720,8 +720,10 @@ public:
 		string cur_line;
 
 		while (getline(indexFile, cur_line)) {
-			if (cur_line == indexStrOutput)
+			if (cur_line == indexStrOutput) {
 				indexAlreadyExistsInFile = true;
+				throw Exceptions(INDEX_ALREADY_EXISTS);
+			}
 		}
 		
 		//If index doesn't already exist, add it
