@@ -719,7 +719,7 @@ public:
 		bool indexAlreadyExistsInFile = false;
 		string cur_line;
 
-		while (getline(indexFile, cur_line)) {
+		while (getline(indexFile, cur_line) && !indexAlreadyExistsInFile) {
 			if (cur_line == indexStrOutput) {
 				indexAlreadyExistsInFile = true;
 				throw Exceptions(INDEX_ALREADY_EXISTS);
@@ -729,6 +729,8 @@ public:
 		//If index doesn't already exist, add it
 		if (!indexAlreadyExistsInFile)
 			indexFile << indexStrOutput;
+
+		indexFile.close();
 
 		cout << "Index " << indexName << " created on table " << tableName << " on " << columnName << " column." << endl;
 	}
