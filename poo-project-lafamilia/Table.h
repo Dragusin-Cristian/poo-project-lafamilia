@@ -711,8 +711,22 @@ public:
 			throw Exceptions(TABLE_DOES_NOT_EXIST);
 		}
 
-		ofstream indexFile(this->getTableAddress(tableName, IS_INDEX), ios::binary);
-		indexFile << tableName.size() << tableName << indexName.size() << indexName << columnName.size() << columnName;
+		fstream indexFile(this->getTableAddress(tableName, IS_INDEX), ios::binary);
+
+		string indexStrOutput = std::to_string(tableName.size()) + tableName + std::to_string(indexName.size()) + indexName + std::to_string(columnName.size()) + columnName + "\n";
+		
+		//check if index already exists in file
+		bool indexAlreadyExistsInFile = false;
+		string cur_line;
+
+		while (getline(indexFile, cur_line)) {
+			if (cur_line == indexStrOutput)
+				indexAlreadyExistsInFile = true;
+		}
+		
+		//If index doesn't already exist, add it
+		if (!indexAlreadyExistsInFile)
+			indexFile << indexStrOutput;
 
 		cout << "Index " << indexName << " created on table " << tableName << " on " << columnName << " column." << endl;
 	}
