@@ -25,6 +25,12 @@ Notes:
 
 * projectPOO.exe ./CommandsFiles/InsertIntoCommand.txt
 
+* projectPOO.exe ./CommandsFiles/UpdateCommand.txt
+
+* projectPOO.exe ./CommandsFiles/DeleteCommand.txt
+
+* projectPOO.exe ./CommandsFiles/CreateIndexCommand.txt
+
 (Feel free to create your own files with commands and test multiple combinations!)
 
 (we need to pass the names of the files through main parameters, and not have the condition for the command to contain projectPOO.exe)

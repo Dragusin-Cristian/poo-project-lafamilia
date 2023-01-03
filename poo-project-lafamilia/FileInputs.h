@@ -109,7 +109,7 @@ private:
 			(input.find("CREATE INDEX ") == 0 && input.find(" ON ") != string::npos && input.find("(") != string::npos && Util::nthOccurrence(input, "(", 2) == -1) ||
 			input.find("DROP INDEX ") == 0 ||
 			(input.find("INSERT INTO ") == 0 && input.find(" VALUES ") != string::npos) ||
-			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos && input.find("(") == string::npos && (input.find(" WHERE ") != string::npos)) ||
+			(input.find("UPDATE ") == 0 && input.find(" SET ") != string::npos && input.find("(") == string::npos && (input.find(" WHERE ") != string::npos) && Util::nthOccurrence(input, "WHERE", 2) == -1) ||
 			(input.find("DELETE FROM ") == 0 && input.find(" WHERE ") != string::npos && Util::nthOccurrence(input, "WHERE", 2) == -1 ) ||
 			(input.find("SELECT ") == 0 && input.find(" FROM ") != string::npos && (
 				(input.find("(") != string::npos && Util::nthOccurrence(input, "(", 2) == -1) // check for args
@@ -345,7 +345,9 @@ private:
 		checkTableNameValidity();
 
 		string afterSet = rawInput.substr(rawInput.find(" SET ") + LENGTH_SET_COMMAND);
-		updateArgs = new StringStructureToArray(afterSet);
+
+		updateArgs = new StringStructureToArray(afterSet.substr(0, afterSet.find("WHERE")));
+		conditions = new StringStructureToArray(afterSet.substr(afterSet.find("WHERE") + 5));
 	}
 
 	void validateCreateIndex() {
@@ -496,8 +498,10 @@ private:
 		int indexAfterWhere = indexAfterTableName + FileInputs::LENGTH_WHERE_CONDITION;
 		//cout << "index after where is " << indexAfterWhere << ".";
 
-		StringStructureToArray condition(this->rawInput.substr(indexAfterWhere, this->rawInput.size()-1));
+		conditions = new StringStructureToArray(this->rawInput.substr(indexAfterWhere, this->rawInput.size()-1));
 		this->hasCondition = true;
+
+
 
 	}
 

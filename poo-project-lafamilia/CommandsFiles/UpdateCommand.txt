@@ -1,0 +1,1 @@
+UPDATE test SET name = 'Stefan Boros', grupa = '1001' WHERE id = 1;

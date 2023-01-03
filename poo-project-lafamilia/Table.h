@@ -678,24 +678,25 @@ public:
 
 		
 
-	// ?:
-	void updateTable(string tableName, string* fieldsToSet=nullptr, string* values=nullptr, int fieldsLength=NULL) {
-		assert(fieldsToSet != nullptr && values != nullptr && fieldsLength > 0, "Null fields reference passed.");
+	// Andrei:
+	void updateTable(string tableName, string* fieldsToSet = nullptr, string* valuesToSet = nullptr, int toSetLength = NULL, 
+					 string* conditionsFields = nullptr, string* conditionsValues = nullptr, int conditionsLength = NULL) 
+	{
+		assert(fieldsToSet != nullptr && valuesToSet != nullptr && toSetLength > 0, "Null fields reference passed.");
 		assert(tableName.size() > 0, "Empty table name passed.");
 
-		// do something in phase 2:
-		cout << "Fields ";
-		for (int i = 0; i < fieldsLength; i++) {
-			cout << fieldsToSet[i] << ", ";
+		cout << endl << endl;
+		for (int i = 0; i < toSetLength; i++) {
+			cout << fieldsToSet[i] << " " << valuesToSet[i] << endl;
 		}
-		cout << "from table "<< tableName <<" updated to values ";
-		for (int i = 0; i < fieldsLength; i++) {
-			cout << values[i] << ", ";
+		cout << endl << endl;
+		for (int i = 0; i < conditionsLength; i++) {
+			cout << conditionsFields[i] << " " << conditionsValues[i] << endl;
 		}
-		cout << endl;
+		cout << endl << endl;
 	}
 
-	// ?:
+	// Andrei:
 	void createIndex(string tableName, string indexName, string columnName) {
 		assert(tableName != "" && indexName != "" && columnName != "", "Empty table name or index name or column name.");
 
@@ -767,7 +768,16 @@ public:
 		}
 
 	}
-	void deleteFrom();
+	
+	// Andrei:
+	void deleteFrom(string tableName, string* fields = nullptr, string* values = nullptr, int length = NULL) {
+		cout << endl << endl << endl;
+		cout << tableName << endl;
+		for (int i = 0; i < length; i++) {
+			cout << fields[i] << " " << values[i] << endl;
+		}
+		cout << endl << endl << endl;
+	}
 
 	// Cristi:
 	void dropTable(string tableName) {
@@ -786,7 +796,7 @@ public:
 			cout << "\nTable data didn't exist, so it couldn't be deleted.";
 	}
 
-	// ?:
+	// Andrei:
 	void dropIndex(string indexName) {
 		assert(indexName != "", "Empty index name passed.");
 		cout << "Index " << indexName << " was dropped (deleted)." << endl;
