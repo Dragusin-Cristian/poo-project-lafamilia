@@ -16,7 +16,7 @@ using namespace std;
 enum createAndDisplayTableTypes { COUNT_LARGEST_VALUES, DISPLAY_VALUES };
 const int DISPLAY_SPACE_BUFFER = 5;
 const string LINE = "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-enum isDataOrStructure {IS_DATA, IS_STRUCTURE};
+enum isDataOrStructure {IS_DATA, IS_STRUCTURE, IS_INDEX};
 enum insertIntoTypes {COUNT_COLUMNS, GET_STRUCTURE};
 
 struct Column {
@@ -38,7 +38,11 @@ private:
 		if (type == IS_STRUCTURE) {
 			return "Tables/" + tableName + ".structure.bin";
 		}
-		return "Tables/" + tableName + ".data.bin";
+		else if (type == IS_DATA) {
+			return "Tables/" + tableName + ".data.bin";
+		}
+		else if (type == IS_INDEX)
+			return "Tables/" + tableName + ".index.bin";
 	}
 
 	void workForDisplayTable(ifstream& g, createAndDisplayTableTypes mode, int* largestName, int* largestType, int* largestSize, int* largestDefVal) {
@@ -678,7 +682,7 @@ public:
 
 		
 
-	// Andrei:
+	// Stefan:
 	void updateTable(string tableName, string* fieldsToSet = nullptr, string* valuesToSet = nullptr, int toSetLength = NULL, 
 					 string* conditionsFields = nullptr, string* conditionsValues = nullptr, int conditionsLength = NULL) 
 	{
@@ -696,9 +700,37 @@ public:
 		cout << endl << endl;
 	}
 
-	// Andrei:
+	// Stefan:
 	void createIndex(string tableName, string indexName, string columnName) {
 		assert(tableName != "" && indexName != "" && columnName != "", "Empty table name or index name or column name.");
+
+		// First, get the structure of the table:
+		ifstream tableFile(this->getTableAddress(tableName, IS_STRUCTURE));
+		// check if the table was created first:
+		if (tableFile.fail()) {
+			throw Exceptions(TABLE_DOES_NOT_EXIST);
+		}
+
+		fstream indexFile(this->getTableAddress(tableName, IS_INDEX), ios::binary);
+
+		string indexStrOutput = std::to_string(tableName.size()) + tableName + std::to_string(indexName.size()) + indexName + std::to_string(columnName.size()) + columnName + "\n";
+		
+		//check if index already exists in file
+		bool indexAlreadyExistsInFile = false;
+		string cur_line;
+
+		while (getline(indexFile, cur_line) && !indexAlreadyExistsInFile) {
+			if (cur_line == indexStrOutput) {
+				indexAlreadyExistsInFile = true;
+				throw Exceptions(INDEX_ALREADY_EXISTS);
+			}
+		}
+		
+		//If index doesn't already exist, add it
+		if (!indexAlreadyExistsInFile)
+			indexFile << indexStrOutput;
+
+		indexFile.close();
 
 		cout << "Index " << indexName << " created on table " << tableName << " on " << columnName << " column." << endl;
 	}
