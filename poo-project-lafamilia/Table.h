@@ -687,7 +687,7 @@ public:
 
 		cout << endl << endl;
 		for (int i = 0; i < toSetLength; i++) {
-			cout << fieldsToSet[i] << " " << valuesToSet[i] << endl;
+			cout << fieldsToSet[i] << " " << valuesToSet[i] << endl; 
 		}
 		cout << endl << endl;
 		for (int i = 0; i < conditionsLength; i++) {
