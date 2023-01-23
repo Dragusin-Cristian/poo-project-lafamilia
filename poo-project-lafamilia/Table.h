@@ -678,7 +678,7 @@ public:
 
 		
 
-	// Andrei:
+	// -- NOT IMPLEMENTED:
 	void updateTable(string tableName, string* fieldsToSet = nullptr, string* valuesToSet = nullptr, int toSetLength = NULL, 
 					 string* conditionsFields = nullptr, string* conditionsValues = nullptr, int conditionsLength = NULL) 
 	{
@@ -696,7 +696,7 @@ public:
 		cout << endl;
 	}
 
-	// Andrei:
+	// -- NOT IMPLEMENTED:
 	void createIndex(string tableName, string indexName, string columnName) {
 		assert(tableName != "" && indexName != "" && columnName != "", "Empty table name or index name or column name.");
 
@@ -769,7 +769,7 @@ public:
 
 	}
 	
-	// Andrei:
+	// -- NOT IMPLEMENTED:
 	void deleteFrom(string tableName, string* fields = nullptr, string* values = nullptr, int length = NULL) {
 		cout << endl;
 		cout << tableName << endl;
@@ -796,7 +796,7 @@ public:
 			cout << "\nTable data didn't exist, so it couldn't be deleted.";
 	}
 
-	// Andrei:
+	// -- NOT IMPLEMENTED:
 	void dropIndex(string indexName) {
 		assert(indexName != "", "Empty index name passed.");
 		cout << "Index " << indexName << " was dropped (deleted)." << endl;
