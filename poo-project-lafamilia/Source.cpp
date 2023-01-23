@@ -121,7 +121,7 @@ int main() {
 	catch (Exceptions e)
 	{
 		// deinitialize alocated and useless memory:
-		ci.~ConsoleInput();
+		ci.~ConsoleInput(); 
 		fi.~FileInputs();
 		table.~Table();
 
