@@ -67,6 +67,7 @@ void workForCommands(string commandString, FileInputs fi, Table table) {
 	table.~Table();
 }
 
+string notImprtant = "";
 
 int main() {
 
@@ -111,16 +112,15 @@ int main() {
 				throw Exceptions(FILE_DOES_NOT_EXIST);
 				break;
 			}
-			cout << commandString << endl;
 		}
 
-		
-
+		cout << endl << "Enter anything followed by enter to exit the program." << endl;
+		cin >> notImprtant;
 		return 0;
 	}
 	catch (Exceptions e)
 	{
-		// deinatialize alocated and useless memory:
+		// deinitialize alocated and useless memory:
 		ci.~ConsoleInput();
 		fi.~FileInputs();
 		table.~Table();

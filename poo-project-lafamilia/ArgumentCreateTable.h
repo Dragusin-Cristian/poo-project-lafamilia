@@ -17,7 +17,7 @@ public:
 	}
 
 	~ArgumentCreateTable() {
-		cout << "ArgumentCreateTable deleted" << endl;
+		//cout << "ArgumentCreateTable deleted" << endl;
 	}
 
 	//GETTERS:

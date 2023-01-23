@@ -33,7 +33,7 @@ public:
 			conditions->~string();
 			conditions = nullptr;
 		}
-		cout << "StringStructureToArray destructed" << endl;
+		//cout << "StringStructureToArray destructed" << endl;
 	}
 
 private:

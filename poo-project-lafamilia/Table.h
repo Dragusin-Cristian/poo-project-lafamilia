@@ -250,7 +250,7 @@ public:
 	}
 
 	~Table() {
-		cout << "Table destructured" << endl;
+		//cout << "Table destructured" << endl;
 	}
 	// Cristi:
 	void createTable(string tableName, ArgumentCreateTable** args, int argsLength) {
@@ -305,7 +305,7 @@ public:
 			}
 			f.close();
 			if (f.good()) {
-				cout << endl << "Table " << tableName << " created successfully" << endl<<endl;
+				cout << endl << "Table " << tableName << " created successfully" << endl;
 			}
 			else {
 				throw Exceptions(ERROR_IN_CREATING_THE_TABLE);
@@ -693,7 +693,7 @@ public:
 		for (int i = 0; i < conditionsLength; i++) {
 			cout << conditionsFields[i] << " " << conditionsValues[i] << endl;
 		}
-		cout << endl << endl;
+		cout << endl;
 	}
 
 	// Andrei:
@@ -771,12 +771,12 @@ public:
 	
 	// Andrei:
 	void deleteFrom(string tableName, string* fields = nullptr, string* values = nullptr, int length = NULL) {
-		cout << endl << endl << endl;
+		cout << endl;
 		cout << tableName << endl;
 		for (int i = 0; i < length; i++) {
 			cout << fields[i] << " " << values[i] << endl;
 		}
-		cout << endl << endl << endl;
+		cout << endl;
 	}
 
 	// Cristi:

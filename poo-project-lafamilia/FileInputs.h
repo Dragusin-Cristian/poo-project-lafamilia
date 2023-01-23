@@ -82,7 +82,7 @@ public:
 			updateArgs->~StringStructureToArray();
 			updateArgs = nullptr;
 		}
-		cout << "Destructor called for FI "<< allWordsBeforeFirstParanthesis << endl;
+		// cout << "Destructor called for FI "<< allWordsBeforeFirstParanthesis << endl;
 	}
 
 
