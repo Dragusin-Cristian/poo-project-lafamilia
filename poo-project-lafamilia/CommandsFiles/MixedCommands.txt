@@ -1,7 +1,6 @@
-CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text,50,'1000'));
-
-
-SELECT (nume) 
-FROM studenti 
-WHERE id = 1;
+CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 24, ''), (grupa, text,8,'1000'));
+INSERT INTO students VALUES (1,'Small-Hands','1001');
+INSERT INTO students VALUES (2,'John-Wick','1001');
+INSERT INTO students VALUES (3,'Neo','1002');
+SELECT ALL FROM students;
 

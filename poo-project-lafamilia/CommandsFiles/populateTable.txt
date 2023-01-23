@@ -1,4 +1,4 @@
-INSERT INTO test VALUES (1,'Randa-Abbas','1001', 10);
-INSERT INTO test VALUES (2,'Dragusin-Cristian','1001', 8);
-INSERT INTO test VALUES (3,'Dorian','1002', 9);
-INSERT INTO test VALUES (4,'Andoniu-Adrian','1004', 4);
+INSERT INTO test VALUES (1,'Lana-Rhoades','1001', 10);
+INSERT INTO test VALUES (2,'Marian','1001', 8);
+INSERT INTO test VALUES (3,'Abella-Danger','1002', 9);
+INSERT INTO test VALUES (4,'Xander-Corvus','1004', 4);
